@@ -275,7 +275,7 @@ function renderReadyStory(datasetMeta, summary, records) {
         frame: timeseriesRows.length
           ? createLineChart(timeseriesRows, labelForMeasure(state.measure))
           : emptyState("No timeseries points match the current filters."),
-        note: datasetMeta.story_sections?.[0]?.summary || "Long-run trend chart for the cleaned series.",
+        note: `Each point represents the sum of all recorded ${labelForMeasure(state.measure).toLowerCase()} under the current filter. Sharp breaks often correspond to new reporting rules, camera programs, or category changes rather than sudden shifts in behaviour alone.`,
       }),
     }),
     createStoryCard({
@@ -348,7 +348,7 @@ function renderReadyStory(datasetMeta, summary, records) {
         frame: detectionRows.length
           ? createStackedDetectionChart(detectionRows)
           : emptyState("No detection-method detail is available for this selection."),
-        note: datasetMeta.story_sections?.[1]?.summary || "Detection mix exposes differences between automated and police-issued enforcement.",
+        note: `Segment widths capture the proportional share of each detection method within a single metric. Camera-led enforcement typically scales differently than officer-issued sanctions, which is why this breakdown is useful for interpreting raw counts.`,
       }),
     }),
     createQualityCard(summary),
