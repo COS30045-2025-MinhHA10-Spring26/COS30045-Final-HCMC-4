@@ -77,6 +77,7 @@ a {
 
 .header-block,
 .header-context,
+.landing-panel,
 .tabs-panel,
 .hero-panel,
 .controls-panel,
@@ -137,6 +138,42 @@ a {
 .page-content {
   display: grid;
   gap: 20px;
+}
+
+.landing-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(300px, 0.8fr);
+  gap: 20px;
+  background: linear-gradient(180deg, rgba(255, 253, 250, 0.98), rgba(232, 221, 208, 0.45));
+}
+
+.landing-copy {
+  display: grid;
+  gap: 10px;
+}
+
+.landing-text {
+  display: grid;
+  gap: 10px;
+  line-height: 1.65;
+}
+
+.landing-highlights {
+  display: grid;
+  gap: 10px;
+}
+
+.landing-note {
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.landing-note strong {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 0.95rem;
 }
 
 .section-header {
@@ -507,6 +544,7 @@ a {
 
 @media (max-width: 1120px) {
   .site-header,
+  .landing-panel,
   .hero-panel,
   .section-header-row,
   .story-card-grid,

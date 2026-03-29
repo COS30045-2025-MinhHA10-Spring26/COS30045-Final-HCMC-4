@@ -8,6 +8,9 @@ const METRIC_COLORS = {
 const FALLBACK_COLORS = ["#8e5214", "#2f6953", "#8c4f3f", "#6f6d33", "#c0893d", "#253040"];
 
 const elements = {
+  landingTitle: document.querySelector("#landing-title"),
+  landingCopy: document.querySelector("#landing-copy"),
+  landingHighlights: document.querySelector("#landing-highlights"),
   datasetTabs: document.querySelector("#dataset-tabs"),
   tabTemplate: document.querySelector("#tab-template"),
   metricTemplate: document.querySelector("#metric-template"),
@@ -110,6 +113,7 @@ function renderDataset() {
     return;
   }
 
+  renderLanding(datasetMeta);
   renderHero(datasetMeta);
   renderDownloads(datasetMeta);
   renderScaffolding(datasetMeta);
@@ -126,13 +130,59 @@ function renderDataset() {
   bindTooltips(elements.storyContent);
 }
 
+function renderLanding(datasetMeta) {
+  const loaded = state.datasets.get(datasetMeta.key);
+
+  if (loaded) {
+    const summary = loaded.summary;
+    const topJurisdictions = summary.aggregates.latest_year_by_jurisdiction.slice(0, 3);
+    const topMetric = summary.aggregates.metric_totals[0];
+    const latestShare = topJurisdictions.reduce((sum, row) => sum + row.total_actions, 0) / summary.latest_year_totals.total_actions;
+
+    elements.landingTitle.textContent = `What the ${summary.latest_year} enforcement record suggests`;
+    elements.landingCopy.innerHTML = [
+      `Across the latest published year, the fines dataset records <strong>${formatNumber(summary.latest_year_totals.total_actions)}</strong> enforcement actions nationwide. Most of that activity is still concentrated in fines rather than arrests or court-bound charges, which means the public record is strongest where infringement systems are most visible and most consistently reported.`,
+      `<strong>${topMetric.metric_label}</strong> dominates the national series, while ${topJurisdictions[0].jurisdiction}, ${topJurisdictions[1].jurisdiction}, and ${topJurisdictions[2].jurisdiction} together account for <strong>${formatPercent(latestShare)}</strong> of all recorded 2024 actions. That concentration is partly about population and roadway exposure, but it also reflects uneven reporting systems and detection technology across jurisdictions.`,
+    ].map((paragraph) => `<p>${paragraph}</p>`).join("");
+
+    elements.landingHighlights.innerHTML = [
+      {
+        title: "Where the pressure sits",
+        copy: `${topJurisdictions[0].jurisdiction} leads the 2024 total with ${formatNumber(topJurisdictions[0].total_actions)} recorded actions, ahead of ${topJurisdictions[1].jurisdiction} and ${topJurisdictions[2].jurisdiction}.`,
+      },
+      {
+        title: "What dominates the record",
+        copy: `${topMetric.metric_label} contributes ${formatPercent(topMetric.total_actions / summary.totals.total_actions)} of all actions in the full cleaned series, dwarfing every other category.`,
+      },
+      {
+        title: "What needs caution",
+        copy: "BITRE notes that state and territory definitions are not fully harmonised, so national patterns are useful signals, but not perfectly like-for-like comparisons.",
+      },
+    ].map((item) => `<article class="landing-note"><strong>${item.title}</strong><p>${item.copy}</p></article>`).join("");
+    return;
+  }
+
+  elements.landingTitle.textContent = datasetMeta.hero?.headline || datasetMeta.title;
+  elements.landingCopy.innerHTML = `<p>${escapeHtml(datasetMeta.hero?.deck || datasetMeta.description)}</p>`;
+  elements.landingHighlights.innerHTML = [
+    {
+      title: "Planned source",
+      copy: datasetMeta.expected_source_file || "Source file pending",
+    },
+    {
+      title: "Next question",
+      copy: datasetMeta.story_sections?.[0]?.summary || "Narrative section to be defined during import.",
+    },
+  ].map((item) => `<article class="landing-note"><strong>${escapeHtml(item.title)}</strong><p>${escapeHtml(item.copy)}</p></article>`).join("");
+}
+
 function renderHero(datasetMeta) {
   const loaded = state.datasets.get(datasetMeta.key);
   const hero = datasetMeta.hero || {};
 
   elements.datasetStatus.textContent = hero.eyebrow || labelForStatus(datasetMeta.status);
   elements.datasetHeroTitle.textContent = hero.headline || datasetMeta.title;
-  elements.datasetHeroDeck.textContent = hero.deck || datasetMeta.description;
+  elements.datasetHeroDeck.textContent = loaded ? buildHeroDeck(loaded.summary) : hero.deck || datasetMeta.description;
   elements.heroMetrics.innerHTML = "";
 
   const cards = loaded ? buildHeroMetrics(loaded.summary) : buildPlaceholderMetrics(datasetMeta);
@@ -198,23 +248,26 @@ function renderReadyStory(datasetMeta, summary, records) {
 
   const strongestMetric = metricRows[0];
   const peakPeriod = [...timeseriesRows].sort((a, b) => b.value - a.value)[0];
+  const latestPeriod = timeseriesRows[timeseriesRows.length - 1];
   const strongestJurisdiction = [...summary.aggregates.latest_year_by_jurisdiction].sort((a, b) => b[state.measure] - a[state.measure])[0];
+  const dominantDetection = detectionRows[0]?.segments[0];
+  const detectionLead = detectionRows[0];
 
   elements.storyContent.innerHTML = [
     createStoryCard({
       kicker: "Chapter 1",
-      title: "The national line tells you when enforcement pressure changed",
+      title: "Recorded enforcement rises and falls with policy, technology, and reporting scope",
       body: [
-        `The first view keeps the story simple: how much ${labelForMeasure(state.measure).toLowerCase()} was recorded over time for the current lens.`,
+        `The long-run line shows that the enforcement record is not static. It expands when jurisdictions add new detection tools or broaden reporting, and it contracts when volumes fall or categories are reported differently. In the current view, the highest point lands in ${peakPeriod ? peakPeriod.label : "the selected period"}.`,
         peakPeriod
-          ? `${capitalize(labelForMeasure(state.measure).toLowerCase())} peaks in ${peakPeriod.label} at ${formatNumber(peakPeriod.value)} under the current filter.`
+          ? `${capitalize(labelForMeasure(state.measure).toLowerCase())} reaches ${formatNumber(peakPeriod.value)} in ${peakPeriod.label}. The latest available point${latestPeriod ? `, ${latestPeriod.label}, sits at ${formatNumber(latestPeriod.value)}` : ""}, which helps show whether current enforcement sits above or below the earlier high-water mark.`
           : "No peak can be calculated for the current filter.",
       ],
-      asideTitle: "What to look for",
+      asideTitle: "What it means",
       asideItems: [
-        "Hover each point for the exact period value.",
-        "Use the year filter to isolate annual reporting changes.",
-        "Switch jurisdiction to see whether a national shift is driven by one state or territory.",
+        "Sharp rises can reflect new camera programs or broader counting rules, not just sudden behavioural collapse.",
+        "Flat periods suggest stable enforcement or stable reporting rather than no offending.",
+        "The jurisdiction filter helps separate national shifts from state-specific surges.",
       ],
       chart: createChartShell({
         title: `Trend of ${labelForMeasure(state.measure).toLowerCase()}`,
@@ -227,18 +280,18 @@ function renderReadyStory(datasetMeta, summary, records) {
     }),
     createStoryCard({
       kicker: "Chapter 2",
-      title: "Not all enforcement categories carry the same weight",
+      title: "The national record is dominated by a small set of behaviours",
       body: [
         strongestMetric
-          ? `${strongestMetric.label} is the largest category in the current selection, with ${formatNumber(strongestMetric.value)} recorded ${labelForMeasure(state.measure).toLowerCase()}.`
+          ? `${strongestMetric.label} is the largest category in the current selection, with ${formatNumber(strongestMetric.value)} recorded ${labelForMeasure(state.measure).toLowerCase()}. That matters because it tells you which behaviour most shapes the national enforcement record before you start comparing states.`
           : "No category is available for the current filter.",
-        "This chart is where the site shifts from scale to composition: it shows which risky behaviours dominate the record rather than just how large the total is.",
+        `The remaining categories still matter, but they occupy a much smaller share of the visible record. In practice, this means public debate can become over-weighted toward speeding if the quieter categories are not pulled back into view deliberately.`,
       ],
-      asideTitle: "Why this graph exists",
+      asideTitle: "What it suggests",
       asideItems: [
-        "Colour encodes the offence category so the same palette repeats through the story.",
-        "Hover bars for exact values and relative share.",
-        "Use it to compare whether the current view is dominated by speeding, phones, seatbelts, or unlicensed driving.",
+        "Speeding stays structurally dominant in the current release.",
+        "Smaller categories can still be policy-significant even when they are numerically minor.",
+        "Switching from fines to charges or arrests changes the balance, especially for unlicensed driving.",
       ],
       chart: createChartShell({
         title: "Metric composition",
@@ -252,18 +305,18 @@ function renderReadyStory(datasetMeta, summary, records) {
     }),
     createStoryCard({
       kicker: "Chapter 3",
-      title: "The state and territory picture is uneven",
+      title: "The geography of enforcement is concentrated, not evenly spread",
       body: [
-        `This matrix stays on ${yearTarget} so cross-jurisdiction comparison is anchored to the same reporting year.`,
+        `This matrix holds the comparison inside ${yearTarget}, which keeps every state and territory on the same reporting year. It makes clear that the national picture is driven by a handful of large jurisdictions and by different mixes of offences inside each one.`,
         strongestJurisdiction
-          ? `${strongestJurisdiction.jurisdiction} currently leads the published ${summary.latest_year} total with ${formatNumber(strongestJurisdiction[state.measure])} ${labelForMeasure(state.measure).toLowerCase()}.`
+          ? `${strongestJurisdiction.jurisdiction} currently leads the published ${summary.latest_year} total with ${formatNumber(strongestJurisdiction[state.measure])} ${labelForMeasure(state.measure).toLowerCase()}. That top line should be read as both an enforcement signal and a reporting-system signal.`
           : "Jurisdiction highlights are unavailable.",
       ],
-      asideTitle: "How to read the matrix",
+      asideTitle: "Reading the pattern",
       asideItems: [
-        "Darker cells indicate higher recorded values.",
-        "Hover any cell to compare a metric inside one jurisdiction.",
-        "This view makes outliers visible without flattening every category into a single total.",
+        "New South Wales, Queensland, and Victoria dominate the visible national total.",
+        "High values can indicate more activity, better detection coverage, or both.",
+        "The matrix is most useful for spotting unusual offence mixes within a single jurisdiction.",
       ],
       chart: createChartShell({
         title: `Jurisdiction by metric in ${yearTarget}`,
@@ -276,16 +329,18 @@ function renderReadyStory(datasetMeta, summary, records) {
     }),
     createStoryCard({
       kicker: "Chapter 4",
-      title: "Detection method changes the meaning of the count",
+      title: "How an offence is detected changes what the count is really showing",
       body: [
-        "Police-issued activity and camera-led activity should not be read as identical forms of enforcement, even when they produce the same legal outcome.",
-        `This final chart keeps the story in ${yearTarget} and shows how fines are being detected${state.jurisdiction === "all" ? " nationally" : ` in ${state.jurisdiction}`}.`,
+        "Police-issued activity and camera-led activity should not be read as identical forms of enforcement, even when they produce the same legal outcome. Cameras tend to reflect continuous, system-level surveillance, while officer-issued sanctions reflect direct on-road interventions.",
+        detectionLead && dominantDetection
+          ? `In this view, ${detectionLead.metric} is led by ${dominantDetection.method.toLowerCase()}, which accounts for ${formatPercent(dominantDetection.share / 100)} of recorded fines in that category${state.jurisdiction === "all" ? " nationally" : ` for ${state.jurisdiction}`}.`
+          : `This final chart keeps the story in ${yearTarget} and shows how fines are being detected${state.jurisdiction === "all" ? " nationally" : ` in ${state.jurisdiction}`}.`,
       ],
-      asideTitle: "Why the last graph matters",
+      asideTitle: "Why it matters",
       asideItems: [
-        "Hover each segment for metric, detection method, and exact count.",
-        "The stacked format reveals whether a category is mostly camera-led or officer-led.",
-        "It prevents raw fine counts from being interpreted without enforcement context.",
+        "A camera-heavy category can scale quickly without the same officer presence on the road.",
+        "A police-heavy category says more about direct intervention and discretionary enforcement.",
+        "The split helps explain why similar fine totals can mean different enforcement environments.",
       ],
       chart: createChartShell({
         title: "Detection mix by metric",
@@ -403,6 +458,12 @@ function buildHeroMetrics(summary) {
       meta: `${formatNumber(summary.record_count)} records emitted`,
     },
   ];
+}
+
+function buildHeroDeck(summary) {
+  const topJurisdiction = summary.aggregates.latest_year_by_jurisdiction[0];
+  const topMetric = summary.aggregates.metric_totals[0];
+  return `In ${summary.latest_year}, the dataset records ${formatNumber(summary.latest_year_totals.total_actions)} enforcement actions nationally. ${topJurisdiction.jurisdiction} carries the largest visible total, while ${topMetric.metric_label.toLowerCase()} remains the dominant category across the cleaned series.`;
 }
 
 function buildPlaceholderMetrics(datasetMeta) {
@@ -808,6 +869,10 @@ function formatNumber(value) {
 
 function formatCompactNumber(value) {
   return new Intl.NumberFormat("en-AU", { notation: "compact", maximumFractionDigits: 1 }).format(value);
+}
+
+function formatPercent(value) {
+  return new Intl.NumberFormat("en-AU", { style: "percent", maximumFractionDigits: 1 }).format(value);
 }
 
 function capitalize(text) {

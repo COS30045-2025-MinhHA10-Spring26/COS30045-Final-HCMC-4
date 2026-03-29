@@ -17,35 +17,45 @@
       <header class="site-header">
         <div class="header-block">
           <p class="site-label">BITRE road safety enforcement</p>
-          <h1>Police enforcement, told as a public-interest story.</h1>
+          <h1>Police enforcement data shows where risky behaviour is being found, punished, and monitored.</h1>
           <p class="lead-copy">
-            This site is designed as a narrative data experience: each dataset has
-            its own tab, its own analytical question, and its own chart sequence.
-            The first live tab covers fines; the remaining tabs are scaffolded so
-            future datasets can drop into the same structure without reworking the
-            interface.
+            The public record is uneven, but it is still revealing. It shows where
+            speeding dominates the enforcement picture, where camera-led detection
+            has changed the scale of recorded offences, and where cross-jurisdiction
+            comparisons need caution because the underlying systems do not line up
+            perfectly.
           </p>
         </div>
         <div class="header-context panel-surface">
           <p class="context-title">Why it matters</p>
           <p>
-            Enforcement data is not just administrative reporting. It signals where
-            risky behaviour is being detected, how monitoring changes over time,
-            and where collection practices still need harmonisation.
+            Enforcement data does not tell the whole road-safety story, but it does
+            reveal what authorities are measuring, what technology they rely on,
+            and which risky behaviours remain highly visible in the system.
           </p>
         </div>
       </header>
 
       <main class="page-content">
+        <section class="panel-surface landing-panel" aria-labelledby="landing-title">
+          <div class="landing-copy">
+            <p class="section-label">National snapshot</p>
+            <h2 id="landing-title">Loading snapshot</h2>
+            <div id="landing-copy" class="landing-text"></div>
+          </div>
+          <div id="landing-highlights" class="landing-highlights"></div>
+        </section>
+
         <section class="tabs-panel panel-surface" aria-labelledby="datasets-heading">
           <div class="section-header section-header-row">
             <div>
-              <p class="section-label">Dataset tabs</p>
-              <h2 id="datasets-heading">Each file has its own story</h2>
+              <p class="section-label">Explore the data</p>
+              <h2 id="datasets-heading">Roadside enforcement datasets</h2>
             </div>
             <p class="section-copy">
-              Ready datasets open live visuals. Planned datasets expose narrative,
-              chart, and ingestion scaffolding for the next implementation pass.
+              The tabs move from recorded sanctions to roadside testing and source
+              definitions. The fines release is live now; the remaining sections
+              are prepared for the next imported files.
             </p>
           </div>
           <div id="dataset-tabs" class="dataset-tabs" role="tablist" aria-label="Police enforcement datasets"></div>
@@ -63,12 +73,12 @@
         <section class="panel-surface controls-panel" aria-labelledby="controls-title">
           <div class="section-header section-header-row">
             <div>
-              <p class="section-label">Interactive lens</p>
-              <h2 id="controls-title">Change the question, not the page</h2>
+              <p class="section-label">Refine the view</p>
+              <h2 id="controls-title">Compare the same story from different angles</h2>
             </div>
             <p class="section-copy">
-              The story stays intact while the charts respond to year,
-              jurisdiction, and measure selection.
+              Switch years, jurisdictions, and measures to test whether the same
+              patterns persist or break apart.
             </p>
           </div>
           <form class="controls-grid" id="controls-form">
@@ -93,11 +103,11 @@
           <div class="section-header section-header-row">
             <div>
               <p class="section-label">Resources and handoff</p>
-              <h2 id="resources-title">Downloads and next-step scaffolding</h2>
+              <h2 id="resources-title">Downloads and source notes</h2>
             </div>
             <p class="section-copy">
-              Analysts can download cleaned data now; future maintainers can see
-              exactly how the next tabs should be wired.
+              The cleaned extracts are available for analysis now, and the notes
+              keep the remaining BITRE files ready for import.
             </p>
           </div>
           <div class="resources-grid">
