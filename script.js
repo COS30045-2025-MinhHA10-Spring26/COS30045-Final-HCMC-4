@@ -276,13 +276,18 @@ function renderReadyStory(datasetMeta, summary, records) {
     .sort((a, b) => b.value - a.value);
 
   const jurisdictionYearRecords = records.filter((record) => {
-  const recordYear = String(record.series_year);
-  const matchesStart = state.yearStart === "all" || recordYear >= state.yearStart;
-  const matchesEnd = state.yearEnd === "all" || recordYear <= state.yearEnd;
-  return matchesStart && matchesEnd;
-});
+    const recordYear = String(record.series_year);
+    const matchesStart = state.yearStart === "all" || recordYear >= state.yearStart;
+    const matchesEnd = state.yearEnd === "all" || recordYear <= state.yearEnd;
+    return matchesStart && matchesEnd;
+  });
   const heatmapRows = buildJurisdictionMetricMatrix(jurisdictionYearRecords, state.measure);
   const detectionRows = buildDetectionBreakdown(jurisdictionYearRecords, state.jurisdiction);
+  const yearRangeLabel = state.yearStart === "all" && state.yearEnd === "all"
+    ? String(summary.latest_year)
+    : state.yearStart === state.yearEnd
+    ? state.yearStart
+    : state.yearStart + "–" + state.yearEnd;
 
   const strongestMetric = metricRows[0];
   const peakPeriod = [...timeseriesRows].sort((a, b) => b.value - a.value)[0];
@@ -345,7 +350,7 @@ function renderReadyStory(datasetMeta, summary, records) {
       kicker: "Chapter 3",
       title: "The geography of enforcement is concentrated, not evenly spread",
       body: [
-        `This matrix holds the comparison inside ${state.yearStart === "all" && state.yearEnd === "all" ? summary.latest_year : state.yearStart === state.yearEnd ? state.yearStart : `${state.yearStart}–${state.yearEnd}`}, which keeps every state and territory on the same reporting year. It makes clear that the national picture is driven by a handful of large jurisdictions and by different mixes of offences inside each one.`,
+        `This matrix holds the comparison inside ${yearRangeLabel}, which keeps every state and territory on the same reporting year. It makes clear that the national picture is driven by a handful of large jurisdictions and by different mixes of offences inside each one.`,
         strongestJurisdiction
           ? `${strongestJurisdiction.jurisdiction} currently leads the published ${summary.latest_year} total with ${formatNumber(strongestJurisdiction[state.measure])} ${labelForMeasure(state.measure).toLowerCase()}. That top line should be read as both an enforcement signal and a reporting-system signal.`
           : "Jurisdiction highlights are unavailable.",
@@ -356,9 +361,9 @@ function renderReadyStory(datasetMeta, summary, records) {
         "High values can indicate more activity, better detection coverage, or both.",
         "The matrix is most useful for spotting unusual offence mixes within a single jurisdiction.",
       ],
-      chart: createChartShell({
-        title: `Jurisdiction by metric in ${yearTarget}`,
-        subtitle: "A hotspot-style matrix for annual comparison",
+chart: createChartShell({
+title: `Jurisdiction by metric in ${yearRangeLabel}`,
+subtitle: "A hotspot-style matrix for annual comparison",
         frame: heatmapRows.cells.length
           ? createHeatmap(heatmapRows)
           : emptyState("No jurisdiction comparison is available for this year."),
@@ -372,7 +377,7 @@ function renderReadyStory(datasetMeta, summary, records) {
         "Police-issued activity and camera-led activity should not be read as identical forms of enforcement, even when they produce the same legal outcome. Cameras tend to reflect continuous, system-level surveillance, while officer-issued sanctions reflect direct on-road interventions.",
         detectionLead && dominantDetection
           ? `In this view, ${detectionLead.metric} is led by ${dominantDetection.method.toLowerCase()}, which accounts for ${formatPercent(dominantDetection.share / 100)} of recorded fines in that category${state.jurisdiction === "all" ? " nationally" : ` for ${state.jurisdiction}`}.`
-          : `This final chart keeps the story in ${yearTarget} and shows how fines are being detected${state.jurisdiction === "all" ? " nationally" : ` in ${state.jurisdiction}`}.`,
+          : `This final chart keeps the story in ${yearRangeLabel} and shows how fines are being detected${state.jurisdiction === "all" ? " nationally" : ` in ${state.jurisdiction}`}.`,
       ],
       asideTitle: "Why it matters",
       asideItems: [
