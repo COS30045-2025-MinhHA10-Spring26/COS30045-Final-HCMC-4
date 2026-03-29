@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Police Enforcement Data Observatory</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="site-header">
+        <div>
+          <p class="kicker">BITRE road safety enforcement</p>
+          <h1>Police enforcement data observatory</h1>
+        </div>
+        <p class="header-copy">
+          A public-facing workspace for exploring enforcement activity, comparing
+          jurisdictions, and preparing future police enforcement datasets for the
+          same reporting pipeline.
+        </p>
+      </header>
+
+      <main class="layout">
+        <section class="panel overview-panel" aria-labelledby="overview-title">
+          <div class="panel-heading">
+            <h2 id="overview-title">Overview</h2>
+            <p id="dataset-description">Loading dataset context.</p>
+          </div>
+          <div class="overview-grid" id="overview-grid"></div>
+          <div class="overview-notes">
+            <div>
+              <h3>What this interface is for</h3>
+              <p>
+                Built for researchers, policy analysts, and operational teams who
+                need a quick way to move from raw enforcement tables to patterns,
+                comparisons, and method-aware interpretation.
+              </p>
+            </div>
+            <div>
+              <h3>Data handling</h3>
+              <p>
+                Excel date serials are normalized to ISO dates, categorical values
+                are trimmed and standardized, and derivative CSV and JSON outputs
+                are generated for future ingestion.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel controls-panel" aria-labelledby="filters-title">
+          <div class="panel-heading compact-heading">
+            <h2 id="filters-title">Filters</h2>
+            <p>Adjust the current lens without losing the national context.</p>
+          </div>
+          <form class="filters" id="filters-form">
+            <label>
+              Dataset
+              <select id="dataset-select"></select>
+            </label>
+            <label>
+              Year
+              <select id="year-select"></select>
+            </label>
+            <label>
+              Jurisdiction
+              <select id="jurisdiction-select"></select>
+            </label>
+            <label>
+              Measure
+              <select id="measure-select"></select>
+            </label>
+          </form>
+        </section>
+
+        <section class="viz-grid">
+          <article class="panel viz-panel" aria-labelledby="trend-title">
+            <div class="panel-heading compact-heading">
+              <h2 id="trend-title">Trend across the series</h2>
+              <p id="trend-copy">Historical totals across the full published series.</p>
+            </div>
+            <div class="chart-frame" id="timeseries-chart"></div>
+          </article>
+
+          <article class="panel viz-panel" aria-labelledby="metric-title">
+            <div class="panel-heading compact-heading">
+              <h2 id="metric-title">Metric profile</h2>
+              <p id="metric-copy">How selected enforcement activity is distributed.</p>
+            </div>
+            <div class="chart-frame" id="metric-chart"></div>
+          </article>
+
+          <article class="panel viz-panel" aria-labelledby="jurisdiction-title">
+            <div class="panel-heading compact-heading">
+              <h2 id="jurisdiction-title">Jurisdiction comparison</h2>
+              <p id="jurisdiction-copy">Relative scale by state and territory.</p>
+            </div>
+            <div class="chart-frame" id="jurisdiction-chart"></div>
+          </article>
+
+          <article class="panel viz-panel" aria-labelledby="detection-title">
+            <div class="panel-heading compact-heading">
+              <h2 id="detection-title">Detection methods</h2>
+              <p id="detection-copy">Visible differences between police-issued and camera-led detection.</p>
+            </div>
+            <div class="chart-frame" id="detection-chart"></div>
+          </article>
+        </section>
+
+        <section class="panel narrative-panel" aria-labelledby="insights-title">
+          <div class="panel-heading">
+            <h2 id="insights-title">Interpretation notes</h2>
+            <p>Context drawn from the source publication and the cleaned dataset.</p>
+          </div>
+          <div class="note-grid" id="insights-grid"></div>
+        </section>
+
+        <section class="lower-grid">
+          <section class="panel" aria-labelledby="downloads-title">
+            <div class="panel-heading compact-heading">
+              <h2 id="downloads-title">File downloads</h2>
+              <p>Ready for analysts now, and structured for more datasets later.</p>
+            </div>
+            <div id="downloads-list" class="download-list"></div>
+          </section>
+
+          <section class="panel" aria-labelledby="scaffold-title">
+            <div class="panel-heading compact-heading">
+              <h2 id="scaffold-title">Future dataset scaffolding</h2>
+              <p>Low-friction extension points for the next agent or maintainer.</p>
+            </div>
+            <div class="scaffold-list" id="scaffold-list"></div>
+          </section>
+        </section>
+      </main>
+    </div>
+
+    <template id="overview-card-template">
+      <article class="stat-card">
+        <p class="stat-label"></p>
+        <strong class="stat-value"></strong>
+        <span class="stat-meta"></span>
+      </article>
+    </template>
+
+    <script type="module" src="script.js"></script>
+  </body>
+</html>
