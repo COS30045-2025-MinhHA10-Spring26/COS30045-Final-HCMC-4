@@ -3,6 +3,7 @@
     {
       "key": "police-enforcement-fines",
       "title": "Police enforcement fines",
+      "short_title": "Fines",
       "description": "Cleaned monthly police enforcement records published by BITRE and the National Road Safety Data Hub.",
       "status": "ready",
       "source_file": "police_enforcement_2024_fines.xlsx",
@@ -13,10 +14,253 @@
       "reference_period": "2008-01-01 to 2024-12-31",
       "record_count": 12179,
       "schema_version": 1,
+      "hero": {
+        "eyebrow": "Dataset now available",
+        "headline": "How visible enforcement responds to risky road behaviour",
+        "deck": "This release tracks the scale and mix of fines, charges, and arrests across Australian jurisdictions, giving policy and research users a public-interest view of where enforcement is concentrated and how it is detected."
+      },
+      "story_sections": [
+        {
+          "slug": "national-pattern",
+          "title": "National pattern",
+          "summary": "Start with the long-run national series, then move down into metric-specific and jurisdiction-specific pressure points."
+        },
+        {
+          "slug": "enforcement-mix",
+          "title": "Enforcement mix",
+          "summary": "Separate police-issued and camera-led activity so users can distinguish behavioural monitoring from direct officer enforcement."
+        }
+      ],
       "future_agent_notes": [
         "Append new datasets to this catalog instead of hardcoding cards in the UI.",
         "Keep normalized field names aligned with the current cleaned JSON structure.",
         "If a workbook introduces new metrics, update METRIC_LABELS and metric grouping rules."
+      ],
+      "planned_visuals": [
+        "Long-run national trend with hoverable period values",
+        "Metric comparison showing where total actions are concentrated",
+        "Jurisdiction-by-metric matrix for identifying state and territory hotspots",
+        "Detection-method breakdown to compare police-issued and camera-led fines"
+      ],
+      "downloads": [
+        {
+          "title": "Original workbook",
+          "kind": "xlsx",
+          "href": "police_enforcement_2024_fines.xlsx",
+          "status": "ready"
+        },
+        {
+          "title": "Cleaned CSV",
+          "kind": "csv",
+          "href": "police_enforcement_2024_fines.cleaned.csv",
+          "status": "ready"
+        },
+        {
+          "title": "Cleaned JSON",
+          "kind": "json",
+          "href": "police_enforcement_2024_fines.cleaned.json",
+          "status": "ready"
+        },
+        {
+          "title": "Summary JSON",
+          "kind": "json",
+          "href": "police_enforcement_2024_fines.summary.json",
+          "status": "ready"
+        }
+      ]
+    },
+    {
+      "key": "police-enforcement-alcohol-drug-tests",
+      "title": "Alcohol and drug tests",
+      "short_title": "Alcohol and drug tests",
+      "description": "Scaffold for BITRE roadside alcohol and drug testing counts, rates, and supporting time-series visuals.",
+      "status": "planned",
+      "category": "Police enforcement",
+      "expected_source_file": "police_enforcement_2024_alcohol_drug_tests.xlsx",
+      "reference_period": "Expected 2008 to 2024 coverage",
+      "hero": {
+        "eyebrow": "Dataset pending import",
+        "headline": "Testing volume is the first story, not just the positives",
+        "deck": "This tab is reserved for the test-volume dataset so future work can tell the compliance story before moving to detected offences."
+      },
+      "story_sections": [
+        {
+          "slug": "testing-coverage",
+          "title": "Testing coverage",
+          "summary": "Show how roadside testing activity changes over time and by jurisdiction."
+        },
+        {
+          "slug": "licence-holder-rates",
+          "title": "Licence-holder rates",
+          "summary": "Normalize test volumes so cross-jurisdiction comparisons are fairer."
+        }
+      ],
+      "planned_visuals": [
+        "Trend line for annual alcohol and drug tests conducted",
+        "Jurisdiction ranking for tests per 10,000 licence holders",
+        "Narrative callout linking testing intensity to subsequent positive-rate datasets"
+      ],
+      "expected_fields": [
+        "YEAR",
+        "JURISDICTION",
+        "TEST_TYPE",
+        "TESTS_CONDUCTED",
+        "LICENCE_RATE"
+      ],
+      "future_agent_notes": [
+        "Create a cleaner that preserves test volume and standardized licence-holder rates.",
+        "Link this tab narratively to the positive-breath and positive-drug tabs."
+      ],
+      "downloads": [
+        {
+          "title": "Alcohol and drug tests workbook",
+          "kind": "xlsx",
+          "href": "police_enforcement_2024_alcohol_drug_tests.xlsx",
+          "status": "planned"
+        }
+      ]
+    },
+    {
+      "key": "police-enforcement-positive-breath-tests",
+      "title": "Positive breath tests",
+      "short_title": "Positive breath tests",
+      "description": "Scaffold for positive random breath test results and rates over time.",
+      "status": "planned",
+      "category": "Police enforcement",
+      "expected_source_file": "police_enforcement_2024_positive_breath_tests.xlsx",
+      "reference_period": "Expected 2008 to 2024 coverage",
+      "hero": {
+        "eyebrow": "Dataset pending import",
+        "headline": "Positive rates tell a different story than raw testing volume",
+        "deck": "This tab should explain whether reductions in drink-driving positives reflect stronger deterrence, changing testing patterns, or both."
+      },
+      "story_sections": [
+        {
+          "slug": "positivity-rate",
+          "title": "Positivity rate",
+          "summary": "Plot the national trend in positive rates and call out breaks in pattern."
+        },
+        {
+          "slug": "jurisdiction-rate",
+          "title": "Jurisdiction rate",
+          "summary": "Show per-licence-holder variation without losing the national picture."
+        }
+      ],
+      "planned_visuals": [
+        "Dual-axis chart for tests conducted and positive-rate trend",
+        "State comparison using standardized rates",
+        "Story note tying drink-driving enforcement to fatal-crash risk behaviour context"
+      ],
+      "expected_fields": [
+        "YEAR",
+        "JURISDICTION",
+        "POSITIVE_TESTS",
+        "POSITIVE_RATE"
+      ],
+      "future_agent_notes": [
+        "Keep percentage fields numeric and expose both counts and rates.",
+        "Support a chart pairing absolute positives with percentage positivity."
+      ],
+      "downloads": [
+        {
+          "title": "Positive breath tests workbook",
+          "kind": "xlsx",
+          "href": "police_enforcement_2024_positive_breath_tests.xlsx",
+          "status": "planned"
+        }
+      ]
+    },
+    {
+      "key": "police-enforcement-positive-drug-tests",
+      "title": "Positive drug tests",
+      "short_title": "Positive drug tests",
+      "description": "Scaffold for positive roadside drug testing outcomes and rate-based comparison.",
+      "status": "planned",
+      "category": "Police enforcement",
+      "expected_source_file": "police_enforcement_2024_positive_drug_tests.xlsx",
+      "reference_period": "Expected 2008 to 2024 coverage",
+      "hero": {
+        "eyebrow": "Dataset pending import",
+        "headline": "Drug-driving detection needs its own narrative, not a footnote",
+        "deck": "This future tab is intended to explain how test volume, positive rates, and state variation have evolved as roadside drug testing expanded nationally."
+      },
+      "story_sections": [
+        {
+          "slug": "national-drug-pattern",
+          "title": "National drug-driving pattern",
+          "summary": "Explain the long rise in roadside drug testing and the recent decline in positivity rates."
+        },
+        {
+          "slug": "state-outliers",
+          "title": "State outliers",
+          "summary": "Identify which jurisdictions report especially high or low positive rates per 10,000 licence holders."
+        }
+      ],
+      "planned_visuals": [
+        "Trend line for positive drug test rate",
+        "Ranked comparison by jurisdiction",
+        "Annotation band describing major shifts after 2020"
+      ],
+      "expected_fields": [
+        "YEAR",
+        "JURISDICTION",
+        "POSITIVE_DRUG_TESTS",
+        "POSITIVE_RATE"
+      ],
+      "future_agent_notes": [
+        "Preserve both absolute counts and rates to support mixed charts.",
+        "Reuse shared tooltip and story-section components from the fines tab."
+      ],
+      "downloads": [
+        {
+          "title": "Positive drug tests workbook",
+          "kind": "xlsx",
+          "href": "police_enforcement_2024_positive_drug_tests.xlsx",
+          "status": "planned"
+        }
+      ]
+    },
+    {
+      "key": "police-enforcement-dictionary",
+      "title": "Data dictionary",
+      "short_title": "Dictionary",
+      "description": "Reference tab reserved for the official police enforcement data dictionary PDF.",
+      "status": "reference",
+      "category": "Documentation",
+      "expected_source_file": "Road safety enforcement data dictionary 2024.pdf",
+      "reference_period": "Reference material",
+      "hero": {
+        "eyebrow": "Reference material",
+        "headline": "Definitions, caveats, and reporting scope belong in the same experience",
+        "deck": "This tab is for glossary-level context so future users can inspect caveats, offence definitions, and collection notes without leaving the site."
+      },
+      "story_sections": [
+        {
+          "slug": "definitions",
+          "title": "Definitions",
+          "summary": "Map enforcement terms to plain-language explanations and original source definitions."
+        },
+        {
+          "slug": "limitations",
+          "title": "Limitations",
+          "summary": "Keep data consistency caveats visible beside every analytical story."
+        }
+      ],
+      "planned_visuals": [
+        "No chart required; this tab should foreground searchable definitions and caveats",
+        "Cross-links back to dataset tabs where each term is used"
+      ],
+      "future_agent_notes": [
+        "When the PDF is added, provide deep links into the glossary and methodology sections.",
+        "Mirror key caveats in dataset-specific story footers."
+      ],
+      "downloads": [
+        {
+          "title": "Police enforcement data dictionary",
+          "kind": "pdf",
+          "href": "Road safety enforcement data dictionary 2024.pdf",
+          "status": "planned"
+        }
       ]
     }
   ]

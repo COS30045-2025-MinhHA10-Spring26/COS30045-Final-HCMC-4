@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="style.css" />
@@ -15,54 +15,63 @@
   <body>
     <div class="page-shell">
       <header class="site-header">
-        <div>
-          <p class="kicker">BITRE road safety enforcement</p>
-          <h1>Police enforcement data observatory</h1>
+        <div class="header-block">
+          <p class="site-label">BITRE road safety enforcement</p>
+          <h1>Police enforcement, told as a public-interest story.</h1>
+          <p class="lead-copy">
+            This site is designed as a narrative data experience: each dataset has
+            its own tab, its own analytical question, and its own chart sequence.
+            The first live tab covers fines; the remaining tabs are scaffolded so
+            future datasets can drop into the same structure without reworking the
+            interface.
+          </p>
         </div>
-        <p class="header-copy">
-          A public-facing workspace for exploring enforcement activity, comparing
-          jurisdictions, and preparing future police enforcement datasets for the
-          same reporting pipeline.
-        </p>
+        <div class="header-context panel-surface">
+          <p class="context-title">Why it matters</p>
+          <p>
+            Enforcement data is not just administrative reporting. It signals where
+            risky behaviour is being detected, how monitoring changes over time,
+            and where collection practices still need harmonisation.
+          </p>
+        </div>
       </header>
 
-      <main class="layout">
-        <section class="panel overview-panel" aria-labelledby="overview-title">
-          <div class="panel-heading">
-            <h2 id="overview-title">Overview</h2>
-            <p id="dataset-description">Loading dataset context.</p>
-          </div>
-          <div class="overview-grid" id="overview-grid"></div>
-          <div class="overview-notes">
+      <main class="page-content">
+        <section class="tabs-panel panel-surface" aria-labelledby="datasets-heading">
+          <div class="section-header section-header-row">
             <div>
-              <h3>What this interface is for</h3>
-              <p>
-                Built for researchers, policy analysts, and operational teams who
-                need a quick way to move from raw enforcement tables to patterns,
-                comparisons, and method-aware interpretation.
-              </p>
+              <p class="section-label">Dataset tabs</p>
+              <h2 id="datasets-heading">Each file has its own story</h2>
             </div>
-            <div>
-              <h3>Data handling</h3>
-              <p>
-                Excel date serials are normalized to ISO dates, categorical values
-                are trimmed and standardized, and derivative CSV and JSON outputs
-                are generated for future ingestion.
-              </p>
-            </div>
+            <p class="section-copy">
+              Ready datasets open live visuals. Planned datasets expose narrative,
+              chart, and ingestion scaffolding for the next implementation pass.
+            </p>
           </div>
+          <div id="dataset-tabs" class="dataset-tabs" role="tablist" aria-label="Police enforcement datasets"></div>
         </section>
 
-        <section class="panel controls-panel" aria-labelledby="filters-title">
-          <div class="panel-heading compact-heading">
-            <h2 id="filters-title">Filters</h2>
-            <p>Adjust the current lens without losing the national context.</p>
+        <section class="panel-surface hero-panel" aria-labelledby="dataset-hero-title">
+          <div class="hero-copy">
+            <p id="dataset-status" class="section-label">Loading dataset</p>
+            <h2 id="dataset-hero-title">Preparing story</h2>
+            <p id="dataset-hero-deck" class="section-copy">Loading dataset framing.</p>
           </div>
-          <form class="filters" id="filters-form">
-            <label>
-              Dataset
-              <select id="dataset-select"></select>
-            </label>
+          <div id="hero-metrics" class="hero-metrics"></div>
+        </section>
+
+        <section class="panel-surface controls-panel" aria-labelledby="controls-title">
+          <div class="section-header section-header-row">
+            <div>
+              <p class="section-label">Interactive lens</p>
+              <h2 id="controls-title">Change the question, not the page</h2>
+            </div>
+            <p class="section-copy">
+              The story stays intact while the charts respond to year,
+              jurisdiction, and measure selection.
+            </p>
+          </div>
+          <form class="controls-grid" id="controls-form">
             <label>
               Year
               <select id="year-select"></select>
@@ -78,73 +87,47 @@
           </form>
         </section>
 
-        <section class="viz-grid">
-          <article class="panel viz-panel" aria-labelledby="trend-title">
-            <div class="panel-heading compact-heading">
-              <h2 id="trend-title">Trend across the series</h2>
-              <p id="trend-copy">Historical totals across the full published series.</p>
-            </div>
-            <div class="chart-frame" id="timeseries-chart"></div>
-          </article>
+        <section id="story-content" class="story-layout"></section>
 
-          <article class="panel viz-panel" aria-labelledby="metric-title">
-            <div class="panel-heading compact-heading">
-              <h2 id="metric-title">Metric profile</h2>
-              <p id="metric-copy">How selected enforcement activity is distributed.</p>
+        <section class="panel-surface resources-panel" aria-labelledby="resources-title">
+          <div class="section-header section-header-row">
+            <div>
+              <p class="section-label">Resources and handoff</p>
+              <h2 id="resources-title">Downloads and next-step scaffolding</h2>
             </div>
-            <div class="chart-frame" id="metric-chart"></div>
-          </article>
-
-          <article class="panel viz-panel" aria-labelledby="jurisdiction-title">
-            <div class="panel-heading compact-heading">
-              <h2 id="jurisdiction-title">Jurisdiction comparison</h2>
-              <p id="jurisdiction-copy">Relative scale by state and territory.</p>
-            </div>
-            <div class="chart-frame" id="jurisdiction-chart"></div>
-          </article>
-
-          <article class="panel viz-panel" aria-labelledby="detection-title">
-            <div class="panel-heading compact-heading">
-              <h2 id="detection-title">Detection methods</h2>
-              <p id="detection-copy">Visible differences between police-issued and camera-led detection.</p>
-            </div>
-            <div class="chart-frame" id="detection-chart"></div>
-          </article>
-        </section>
-
-        <section class="panel narrative-panel" aria-labelledby="insights-title">
-          <div class="panel-heading">
-            <h2 id="insights-title">Interpretation notes</h2>
-            <p>Context drawn from the source publication and the cleaned dataset.</p>
+            <p class="section-copy">
+              Analysts can download cleaned data now; future maintainers can see
+              exactly how the next tabs should be wired.
+            </p>
           </div>
-          <div class="note-grid" id="insights-grid"></div>
-        </section>
-
-        <section class="lower-grid">
-          <section class="panel" aria-labelledby="downloads-title">
-            <div class="panel-heading compact-heading">
-              <h2 id="downloads-title">File downloads</h2>
-              <p>Ready for analysts now, and structured for more datasets later.</p>
+          <div class="resources-grid">
+            <div>
+              <h3>Files</h3>
+              <div id="downloads-list" class="download-list"></div>
             </div>
-            <div id="downloads-list" class="download-list"></div>
-          </section>
-
-          <section class="panel" aria-labelledby="scaffold-title">
-            <div class="panel-heading compact-heading">
-              <h2 id="scaffold-title">Future dataset scaffolding</h2>
-              <p>Low-friction extension points for the next agent or maintainer.</p>
+            <div>
+              <h3>Implementation path</h3>
+              <div id="scaffold-list" class="scaffold-list"></div>
             </div>
-            <div class="scaffold-list" id="scaffold-list"></div>
-          </section>
+          </div>
         </section>
       </main>
     </div>
 
-    <template id="overview-card-template">
-      <article class="stat-card">
-        <p class="stat-label"></p>
-        <strong class="stat-value"></strong>
-        <span class="stat-meta"></span>
+    <div id="chart-tooltip" class="chart-tooltip" hidden></div>
+
+    <template id="tab-template">
+      <button class="dataset-tab" type="button" role="tab">
+        <span class="tab-title"></span>
+        <span class="tab-meta"></span>
+      </button>
+    </template>
+
+    <template id="metric-template">
+      <article class="hero-metric-card">
+        <p class="metric-label"></p>
+        <strong class="metric-value"></strong>
+        <span class="metric-meta"></span>
       </article>
     </template>
 
