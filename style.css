@@ -82,7 +82,7 @@ a {
 .hero-panel,
 .controls-panel,
 .story-card,
-.resources-panel {
+.downloads-panel {
   padding: 20px;
 }
 
@@ -428,22 +428,16 @@ a {
   border-radius: 2px;
 }
 
-.resources-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 20px;
+.downloads-panel {
+  padding: 20px;
 }
 
-.download-list,
-.scaffold-list,
-.placeholder-grid {
+.download-list {
   display: grid;
   gap: 12px;
 }
 
-.download-card,
-.scaffold-item,
-.placeholder-panel {
+.download-card {
   padding: 14px;
   border: 1px solid var(--border);
   border-radius: 8px;
@@ -488,12 +482,6 @@ a {
   pointer-events: none;
 }
 
-.scaffold-item {
-  display: grid;
-  gap: 6px;
-}
-
-.placeholder-panel ul,
 .story-aside ul {
   margin: 0;
   padding-left: 18px;

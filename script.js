@@ -116,7 +116,6 @@ function renderDataset() {
   renderLanding(datasetMeta);
   renderHero(datasetMeta);
   renderDownloads(datasetMeta);
-  renderScaffolding(datasetMeta);
 
   if (datasetMeta.status === "ready") {
     const dataset = state.datasets.get(datasetMeta.key);
@@ -413,25 +412,6 @@ function renderDownloads(datasetMeta) {
         </article>
       `;
     })
-    .join("");
-}
-
-function renderScaffolding(datasetMeta) {
-  const notes = (datasetMeta.future_agent_notes || []).concat([
-    "Dataset tabs are driven by data/catalog.json, so new pages should be added there first.",
-    "The same story layout can render both ready datasets and planned placeholders.",
-    "Interactive charts read normalized JSON, keeping workbook parsing separate from UI behaviour.",
-  ]);
-
-  elements.scaffoldList.innerHTML = notes
-    .map(
-      (note, index) => `
-        <article class="scaffold-item">
-          <strong>Step ${index + 1}</strong>
-          <p>${escapeHtml(note)}</p>
-        </article>
-      `
-    )
     .join("");
 }
 
