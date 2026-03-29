@@ -15,25 +15,15 @@
   <body>
     <div class="page-shell">
       <header class="site-header">
-        <div class="header-block">
-          <p class="site-label">BITRE road safety enforcement</p>
-          <h1>Police enforcement data shows where risky behaviour is being found, punished, and monitored.</h1>
-          <p class="lead-copy">
-            The public record is uneven, but it is still revealing. It shows where
-            speeding dominates the enforcement picture, where camera-led detection
-            has changed the scale of recorded offences, and where cross-jurisdiction
-            comparisons need caution because the underlying systems do not line up
-            perfectly.
-          </p>
-        </div>
-        <div class="header-context panel-surface">
-          <p class="context-title">Why it matters</p>
-          <p>
-            Enforcement data does not tell the whole road-safety story, but it does
-            reveal what authorities are measuring, what technology they rely on,
-            and which risky behaviours remain highly visible in the system.
-          </p>
-        </div>
+        <p class="site-label">BITRE road safety enforcement</p>
+        <h1>Police enforcement data shows where risky behaviour is being found, punished, and monitored.</h1>
+        <p class="lead-copy">
+          The public record is uneven, but it is still revealing. It shows where
+          speeding dominates the enforcement picture, where camera-led detection
+          has changed the scale of recorded offences, and where cross-jurisdiction
+          comparisons need caution because the underlying systems do not line up
+          perfectly.
+        </p>
       </header>
 
       <main class="page-content">
@@ -97,22 +87,13 @@
           </form>
         </section>
 
-  <section id="story-content" class="story-layout"></section>
-
-  <section class="panel-surface downloads-panel" aria-labelledby="downloads-title">
-    <div class="section-header section-header-row">
-      <div>
-        <p class="section-label">Download the data</p>
-        <h2 id="downloads-title">Files for analysis</h2>
-      </div>
-      <p class="section-copy">
-        All files are ready for download and offline analysis.
-      </p>
-    </div>
-    <div id="downloads-list" class="download-list"></div>
-  </section>
+<section id="story-content" class="story-layout"></section>
 </main>
-    </div>
+
+<footer class="site-footer">
+<p>Data source: Bureau of Infrastructure and Transport Research Economics (BITRE) road safety enforcement statistics.</p>
+</footer>
+</div>
 
     <div id="chart-tooltip" class="chart-tooltip" hidden></div>
 
@@ -123,14 +104,14 @@
       </button>
     </template>
 
-    <template id="metric-template">
-      <article class="hero-metric-card">
-        <p class="metric-label"></p>
-        <strong class="metric-value"></strong>
-        <span class="metric-meta"></span>
-      </article>
-    </template>
+  <template id="metric-template">
+  <article class="hero-metric-card">
+  <p class="metric-label"></p>
+  <strong class="metric-value"></strong>
+  <span class="metric-meta"></span>
+  </article>
+  </template>
 
-    <script type="module" src="script.js"></script>
-  </body>
+<script type="module" src="script.js"></script>
+</body>
 </html>

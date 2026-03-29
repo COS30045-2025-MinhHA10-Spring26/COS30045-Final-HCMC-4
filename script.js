@@ -23,8 +23,6 @@ const elements = {
   jurisdictionSelect: document.querySelector("#jurisdiction-select"),
   measureSelect: document.querySelector("#measure-select"),
   storyContent: document.querySelector("#story-content"),
-  downloadsList: document.querySelector("#downloads-list"),
-  scaffoldList: document.querySelector("#scaffold-list"),
   tooltip: document.querySelector("#chart-tooltip"),
 };
 
@@ -115,7 +113,6 @@ function renderDataset() {
 
   renderLanding(datasetMeta);
   renderHero(datasetMeta);
-  renderDownloads(datasetMeta);
 
   if (datasetMeta.status === "ready") {
     const dataset = state.datasets.get(datasetMeta.key);
@@ -394,25 +391,6 @@ function renderPlannedStory(datasetMeta) {
       </article>
     </section>
   `;
-}
-
-function renderDownloads(datasetMeta) {
-  const downloads = datasetMeta.downloads || [];
-  elements.downloadsList.innerHTML = downloads
-    .map((file) => {
-      const isReady = file.status === "ready";
-      const href = isReady ? `./data/${file.href}` : "#";
-      return `
-        <article class="download-card">
-          <div>
-            <p class="download-title">${escapeHtml(file.title)}</p>
-            <p class="download-meta">${escapeHtml((file.kind || "file").toUpperCase())} • ${escapeHtml(labelForStatus(file.status || datasetMeta.status))}</p>
-          </div>
-          <a class="download-link ${isReady ? "" : "is-disabled"}" href="${href}" ${isReady ? "download" : "aria-disabled=\"true\""}>${isReady ? "Download" : "Planned"}</a>
-        </article>
-      `;
-    })
-    .join("");
 }
 
 function buildHeroMetrics(summary) {
