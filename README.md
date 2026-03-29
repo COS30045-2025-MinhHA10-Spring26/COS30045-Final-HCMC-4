@@ -1,22 +1,41 @@
-# COS30045 Final - Police Enforcement Observatory
+# Police Enforcement Data Observatory
 
-Static data exploration site for BITRE police enforcement data.
+A public-interest data exploration site built on Australian road safety enforcement data published by BITRE and the National Road Safety Data Hub.
+
+The site presents enforcement data as a series of narrative chapters, each anchored to real numbers from the cleaned dataset. Interactive charts respond to year, jurisdiction, and measure selections so readers can test whether national patterns hold under different lenses.
+
+## Running locally
+
+```
+python -m http.server 4173
+```
+
+Then open `http://localhost:4173` in a browser.
+
+## Currently available datasets
+
+| Dataset | Status |
+|---------|--------|
+| Police enforcement fines | Live |
+| Alcohol and drug tests | Planned |
+| Positive breath tests | Planned |
+| Positive drug tests | Planned |
+| Data dictionary | Reference tab |
+
+## Data sources
+
+- [BITRE road safety enforcement data (2024)](https://www.bitre.gov.au/publications/2024/road-safety-enforcement-data)
+- [National Road Safety Data Hub](https://datahub.roadsafety.gov.au/safe-systems/safe-road-use/police-enforcement)
 
 ## Project structure
 
-- `index.html` - application shell
-- `style.css` - visual system and responsive layout
-- `script.js` - data loading, filtering, and chart rendering
-- `scripts/build_police_enforcement_data.py` - workbook parsing and cleaning pipeline
-- `data/catalog.json` - dataset registry for the download cards and future additions
-- `data/police_enforcement_2024_fines.cleaned.json` - normalized record-level export
-- `data/police_enforcement_2024_fines.summary.json` - aggregates, quality checks, and metadata
-- `data/police_enforcement_2024_fines.cleaned.csv` - analysis-friendly CSV export
+```
+index.html          Application shell
+style.css           Visual system and responsive layout
+script.js           Data loading, filtering, chart rendering, and tooltips
+data/               Cleaned data assets and dataset catalog
+scripts/            Workbook parsing and cleaning pipeline
+MAINTAINERS.md      Contributor and future-agent documentation
+```
 
-## Data workflow
-
-1. Place the source workbook in `data/`.
-2. Run `python scripts/build_police_enforcement_data.py`.
-3. Serve the site locally, for example with `python -m http.server`.
-
-The cleaning script currently targets the fines workbook, but the output schema and `data/catalog.json` are set up so future datasets can be added without rewriting the UI.
+For contributor guidelines and implementation details, see [MAINTAINERS.md](MAINTAINERS.md).

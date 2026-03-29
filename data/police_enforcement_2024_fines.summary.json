@@ -9,7 +9,7 @@
     "source_file": "police_enforcement_2024_fines.xlsx"
   },
   "schema_version": 1,
-  "generated_at": "2026-03-29T09:47:21Z",
+  "generated_at": "2026-03-29T11:17:48Z",
   "record_count": 12179,
   "latest_year": 2024,
   "period_coverage": {
@@ -784,6 +784,6 @@
     "The source workbook mixes police-issued and camera-issued enforcement depending on metric and jurisdiction.",
     "Zero values are retained as observed values rather than treated as missing data.",
     "Date serials from Excel are converted to ISO 8601 calendar dates for easier downstream use.",
-    "Future datasets can be added to catalog.json and processed with a similar normalized schema."
+    "Cross-jurisdiction comparisons should be read as indicative because state and territory reporting systems are not fully harmonised."
   ]
 }

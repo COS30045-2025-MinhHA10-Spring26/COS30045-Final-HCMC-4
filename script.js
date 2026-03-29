@@ -518,15 +518,15 @@ function createQualityCard(summary) {
         <div>
           <div class="story-header">
             <p class="story-kicker">Method</p>
-            <h2>Data cleaning and interpretation guardrails stay visible</h2>
+            <h2>Cleaning is part of the story, not a hidden step</h2>
           </div>
           <div class="story-body">
-            <p>The site treats cleaning as part of the story. Dates are normalized, categorical values are trimmed, and zeroes are preserved as observed values rather than erased as nulls.</p>
-            <p>That matters for a PSA-style experience: users should understand what they are seeing and where caution is still required.</p>
+            <p>Every number on this page passes through a published cleaning pipeline before it reaches a chart. That pipeline converts Excel date serials to calendar dates, trims inconsistent text values, and preserves zeroes as observed values rather than erasing them as missing data.</p>
+            <p>The result is a dataset you can download and re-run, not a set of opaque chart values. That matters here because the underlying definitions vary across jurisdictions, so transparency about what was kept and what was discarded matters more than in a typical dashboard.</p>
           </div>
         </div>
         <aside class="story-aside">
-          <h3>Current quality notes</h3>
+          <h3>What to watch for</h3>
           <ul>${notes}</ul>
         </aside>
       </div>

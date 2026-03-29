@@ -442,7 +442,7 @@ def build_summary(
             "The source workbook mixes police-issued and camera-issued enforcement depending on metric and jurisdiction.",
             "Zero values are retained as observed values rather than treated as missing data.",
             "Date serials from Excel are converted to ISO 8601 calendar dates for easier downstream use.",
-            "Future datasets can be added to catalog.json and processed with a similar normalized schema.",
+            "Cross-jurisdiction comparisons should be read as indicative because state and territory reporting systems are not fully harmonised.",
         ],
     }
 
