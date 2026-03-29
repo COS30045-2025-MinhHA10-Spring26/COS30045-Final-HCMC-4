@@ -19,7 +19,8 @@ const elements = {
   datasetHeroDeck: document.querySelector("#dataset-hero-deck"),
   heroMetrics: document.querySelector("#hero-metrics"),
   controlsPanel: document.querySelector(".controls-panel"),
-  yearSelect: document.querySelector("#year-select"),
+  yearStartSelect: document.querySelector("#year-start-select"),
+  yearEndSelect: document.querySelector("#year-end-select"),
   jurisdictionSelect: document.querySelector("#jurisdiction-select"),
   measureSelect: document.querySelector("#measure-select"),
   storyContent: document.querySelector("#story-content"),
@@ -30,7 +31,8 @@ const state = {
   catalog: null,
   datasets: new Map(),
   currentDatasetKey: null,
-  year: "all",
+  yearStart: "all",
+  yearEnd: "all",
   jurisdiction: "all",
   measure: "total_actions",
 };
@@ -61,8 +63,15 @@ async function init() {
 }
 
 function bindGlobalEvents() {
-  elements.yearSelect.addEventListener("change", (event) => {
-    state.year = event.target.value;
+  elements.yearStartSelect.addEventListener("change", (event) => {
+    state.yearStart = event.target.value;
+    syncYearRange();
+    renderDataset();
+  });
+
+  elements.yearEndSelect.addEventListener("change", (event) => {
+    state.yearEnd = event.target.value;
+    syncYearRange();
     renderDataset();
   });
 
@@ -77,6 +86,21 @@ function bindGlobalEvents() {
   });
 
   window.addEventListener("scroll", hideTooltip, { passive: true });
+}
+
+function syncYearRange() {
+  const years = getAllYears();
+  const startIdx = years.indexOf(state.yearStart);
+  const endIdx = years.indexOf(state.yearEnd);
+  if (startIdx !== -1 && endIdx !== -1 && startIdx > endIdx) {
+    state.yearEnd = state.yearStart;
+  }
+}
+
+function getAllYears() {
+  const dataset = state.datasets.get(state.currentDatasetKey);
+  if (!dataset) return [];
+  return [...new Set(dataset.records.map((r) => String(r.series_year)))].sort();
 }
 
 function renderTabs() {
@@ -98,7 +122,8 @@ function renderTabs() {
 
 function selectDataset(datasetKey) {
   state.currentDatasetKey = datasetKey;
-  state.year = "all";
+  state.yearStart = "all";
+  state.yearEnd = "all";
   state.jurisdiction = "all";
   state.measure = "total_actions";
   renderTabs();
@@ -203,7 +228,10 @@ function renderControls(summary, records) {
     { key: "arrests", label: "Arrests" },
   ];
 
-  elements.yearSelect.innerHTML = [`<option value="all">All years</option>`]
+  elements.yearStartSelect.innerHTML = [`<option value="all">All years</option>`]
+    .concat(years.map((year) => `<option value="${year}">${year}</option>`))
+    .join("");
+  elements.yearEndSelect.innerHTML = [`<option value="all">All years</option>`]
     .concat(years.map((year) => `<option value="${year}">${year}</option>`))
     .join("");
   elements.jurisdictionSelect.innerHTML = [`<option value="all">National</option>`]
@@ -213,14 +241,23 @@ function renderControls(summary, records) {
     .map((measure) => `<option value="${measure.key}">${measure.label}</option>`)
     .join("");
 
-  elements.yearSelect.value = state.year;
+  elements.yearStartSelect.value = state.yearStart;
+  elements.yearEndSelect.value = state.yearEnd;
   elements.jurisdictionSelect.value = state.jurisdiction;
   elements.measureSelect.value = state.measure;
 }
 
 function renderReadyStory(datasetMeta, summary, records) {
   const filtered = filterRecords(records);
-  const yearTarget = state.year === "all" ? String(summary.latest_year) : state.year;
+  const yearLabel = state.yearStart === "all" && state.yearEnd === "all"
+    ? String(summary.latest_year)
+    : state.yearStart === "all" && state.yearEnd !== "all"
+    ? `up to ${state.yearEnd}`
+    : state.yearStart !== "all" && state.yearEnd === "all"
+    ? `${state.yearStart} onwards`
+    : state.yearStart === state.yearEnd
+    ? state.yearStart
+    : `${state.yearStart}–${state.yearEnd}`;
   const scopeLabel = `${state.jurisdiction === "all" ? "national" : state.jurisdiction.toLowerCase()} ${labelForMeasure(state.measure).toLowerCase()}`;
 
   const timeseries = aggregateBy(filtered, (record) => record.period_start, (bucket, record) => {
@@ -238,7 +275,12 @@ function renderReadyStory(datasetMeta, summary, records) {
     .map(([label, values]) => ({ label, value: values.value, color: colorForMetric(label) }))
     .sort((a, b) => b.value - a.value);
 
-  const jurisdictionYearRecords = records.filter((record) => String(record.series_year) === yearTarget);
+  const jurisdictionYearRecords = records.filter((record) => {
+  const recordYear = String(record.series_year);
+  const matchesStart = state.yearStart === "all" || recordYear >= state.yearStart;
+  const matchesEnd = state.yearEnd === "all" || recordYear <= state.yearEnd;
+  return matchesStart && matchesEnd;
+});
   const heatmapRows = buildJurisdictionMetricMatrix(jurisdictionYearRecords, state.measure);
   const detectionRows = buildDetectionBreakdown(jurisdictionYearRecords, state.jurisdiction);
 
@@ -303,7 +345,7 @@ function renderReadyStory(datasetMeta, summary, records) {
       kicker: "Chapter 3",
       title: "The geography of enforcement is concentrated, not evenly spread",
       body: [
-        `This matrix holds the comparison inside ${yearTarget}, which keeps every state and territory on the same reporting year. It makes clear that the national picture is driven by a handful of large jurisdictions and by different mixes of offences inside each one.`,
+        `This matrix holds the comparison inside ${state.yearStart === "all" && state.yearEnd === "all" ? summary.latest_year : state.yearStart === state.yearEnd ? state.yearStart : `${state.yearStart}–${state.yearEnd}`}, which keeps every state and territory on the same reporting year. It makes clear that the national picture is driven by a handful of large jurisdictions and by different mixes of offences inside each one.`,
         strongestJurisdiction
           ? `${strongestJurisdiction.jurisdiction} currently leads the published ${summary.latest_year} total with ${formatNumber(strongestJurisdiction[state.measure])} ${labelForMeasure(state.measure).toLowerCase()}. That top line should be read as both an enforcement signal and a reporting-system signal.`
           : "Jurisdiction highlights are unavailable.",
@@ -779,7 +821,10 @@ function aggregateBy(items, keyFn, reducer, seedFactory) {
 
 function filterRecords(records) {
   return records.filter((record) => {
-    const matchesYear = state.year === "all" || String(record.series_year) === state.year;
+    const year = String(record.series_year);
+    const matchesYearStart = state.yearStart === "all" || year >= state.yearStart;
+    const matchesYearEnd = state.yearEnd === "all" || year <= state.yearEnd;
+    const matchesYear = matchesYearStart && matchesYearEnd;
     const matchesJurisdiction = state.jurisdiction === "all" || record.jurisdiction === state.jurisdiction;
     return matchesYear && matchesJurisdiction;
   });

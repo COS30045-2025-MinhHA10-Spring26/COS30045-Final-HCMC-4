@@ -62,10 +62,14 @@ a {
 
 .site-header {
   display: grid;
-  grid-template-columns: minmax(0, 1.45fr) minmax(280px, 0.7fr);
-  gap: 20px;
-  align-items: stretch;
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  gap: 32px;
+  align-items: start;
   margin-bottom: 20px;
+}
+
+.header-content {
+  max-width: 620px;
 }
 
 .panel-surface {
@@ -284,6 +288,20 @@ a {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
+}
+
+.year-range-control {
+  display: flex;
+  gap: 8px;
+}
+
+.year-range-control label {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 0.92rem;
+  font-weight: 600;
 }
 
 .controls-grid label {
