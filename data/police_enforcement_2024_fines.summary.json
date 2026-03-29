@@ -1,0 +1,789 @@
+{
+  "dataset_key": "police-enforcement-fines",
+  "title": "Police enforcement fines",
+  "description": "Cleaned monthly police enforcement records published by BITRE and the National Road Safety Data Hub.",
+  "source": {
+    "name": "Bureau of Infrastructure and Transport Research Economics (BITRE)",
+    "publication_url": "https://www.bitre.gov.au/publications/2024/road-safety-enforcement-data",
+    "dataset_url": "https://datahub.roadsafety.gov.au/safe-systems/safe-road-use/police-enforcement",
+    "source_file": "police_enforcement_2024_fines.xlsx"
+  },
+  "schema_version": 1,
+  "generated_at": "2026-03-29T09:41:41Z",
+  "record_count": 12179,
+  "latest_year": 2024,
+  "period_coverage": {
+    "start": "2008-01-01",
+    "end": "2024-12-31",
+    "count": 39
+  },
+  "totals": {
+    "fines": 63458809,
+    "arrests": 9184,
+    "charges": 122732,
+    "total_actions": 63590725
+  },
+  "latest_year_totals": {
+    "fines": 3888724,
+    "arrests": 4611,
+    "charges": 62883,
+    "total_actions": 3956218
+  },
+  "dimensions": {
+    "jurisdictions": [
+      "ACT",
+      "NSW",
+      "NT",
+      "QLD",
+      "SA",
+      "TAS",
+      "VIC",
+      "WA"
+    ],
+    "locations": [
+      "All regions",
+      "Inner Regional Australia",
+      "Major Cities of Australia",
+      "Outer Regional Australia",
+      "Remote Australia",
+      "Unknown",
+      "Very Remote Australia"
+    ],
+    "age_groups": [
+      "0-16",
+      "17-25",
+      "26-39",
+      "40-64",
+      "65 and over",
+      "All ages",
+      "Unknown"
+    ],
+    "metrics": [
+      {
+        "key": "mobile_phone_use",
+        "label": "Mobile phone use"
+      },
+      {
+        "key": "non_wearing_seatbelts",
+        "label": "Seatbelt non-compliance"
+      },
+      {
+        "key": "speed_fines",
+        "label": "Speeding fines"
+      },
+      {
+        "key": "unlicensed_driving",
+        "label": "Unlicensed driving"
+      }
+    ],
+    "measures": [
+      {
+        "key": "fines",
+        "label": "Fines"
+      },
+      {
+        "key": "arrests",
+        "label": "Arrests"
+      },
+      {
+        "key": "charges",
+        "label": "Charges"
+      }
+    ],
+    "detection_methods": [
+      "Average speed camera",
+      "Fixed camera",
+      "Fixed or mobile camera",
+      "Mobile camera",
+      "Not applicable",
+      "Other",
+      "Police issued",
+      "Red light camera",
+      "Unknown"
+    ]
+  },
+  "quality": {
+    "rows_seen": 12179,
+    "rows_emitted": 12179,
+    "rows_skipped": 0,
+    "missing_required_values": {},
+    "unknown_metric_keys": []
+  },
+  "aggregates": {
+    "timeseries": [
+      {
+        "period_start": "2008-01-01",
+        "period_label": "Jan 2008",
+        "fines": 2795478,
+        "arrests": 0,
+        "charges": 0,
+        "total_actions": 2795478
+      },
+      {
+        "period_start": "2009-01-01",
+        "period_label": "Jan 2009",
+        "fines": 2741523,
+        "arrests": 0,
+        "charges": 0,
+        "total_actions": 2741523
+      },
+      {
+        "period_start": "2010-01-01",
+        "period_label": "Jan 2010",
+        "fines": 2690192,
+        "arrests": 0,
+        "charges": 0,
+        "total_actions": 2690192
+      },
+      {
+        "period_start": "2011-01-01",
+        "period_label": "Jan 2011",
+        "fines": 3015982,
+        "arrests": 0,
+        "charges": 0,
+        "total_actions": 3015982
+      },
+      {
+        "period_start": "2012-01-01",
+        "period_label": "Jan 2012",
+        "fines": 3171137,
+        "arrests": 0,
+        "charges": 0,
+        "total_actions": 3171137
+      },
+      {
+        "period_start": "2013-01-01",
+        "period_label": "Jan 2013",
+        "fines": 3054093,
+        "arrests": 0,
+        "charges": 0,
+        "total_actions": 3054093
+      },
+      {
+        "period_start": "2014-01-01",
+        "period_label": "Jan 2014",
+        "fines": 3802419,
+        "arrests": 0,
+        "charges": 0,
+        "total_actions": 3802419
+      },
+      {
+        "period_start": "2015-01-01",
+        "period_label": "Jan 2015",
+        "fines": 3926125,
+        "arrests": 0,
+        "charges": 0,
+        "total_actions": 3926125
+      },
+      {
+        "period_start": "2016-01-01",
+        "period_label": "Jan 2016",
+        "fines": 3380380,
+        "arrests": 0,
+        "charges": 0,
+        "total_actions": 3380380
+      },
+      {
+        "period_start": "2017-01-01",
+        "period_label": "Jan 2017",
+        "fines": 3839573,
+        "arrests": 0,
+        "charges": 0,
+        "total_actions": 3839573
+      },
+      {
+        "period_start": "2018-01-01",
+        "period_label": "Jan 2018",
+        "fines": 4451351,
+        "arrests": 0,
+        "charges": 0,
+        "total_actions": 4451351
+      },
+      {
+        "period_start": "2019-01-01",
+        "period_label": "Jan 2019",
+        "fines": 3846846,
+        "arrests": 0,
+        "charges": 0,
+        "total_actions": 3846846
+      },
+      {
+        "period_start": "2020-01-01",
+        "period_label": "Jan 2020",
+        "fines": 4004534,
+        "arrests": 0,
+        "charges": 0,
+        "total_actions": 4004534
+      },
+      {
+        "period_start": "2021-01-01",
+        "period_label": "Jan 2021",
+        "fines": 5121411,
+        "arrests": 0,
+        "charges": 0,
+        "total_actions": 5121411
+      },
+      {
+        "period_start": "2022-01-01",
+        "period_label": "Jan 2022",
+        "fines": 4994154,
+        "arrests": 0,
+        "charges": 0,
+        "total_actions": 4994154
+      },
+      {
+        "period_start": "2023-01-01",
+        "period_label": "Jan 2023",
+        "fines": 1313018,
+        "arrests": 465,
+        "charges": 5578,
+        "total_actions": 1319061
+      },
+      {
+        "period_start": "2023-02-01",
+        "period_label": "Feb 2023",
+        "fines": 291559,
+        "arrests": 368,
+        "charges": 4686,
+        "total_actions": 296613
+      },
+      {
+        "period_start": "2023-03-01",
+        "period_label": "Mar 2023",
+        "fines": 318446,
+        "arrests": 408,
+        "charges": 5038,
+        "total_actions": 323892
+      },
+      {
+        "period_start": "2023-04-01",
+        "period_label": "Apr 2023",
+        "fines": 288038,
+        "arrests": 352,
+        "charges": 4708,
+        "total_actions": 293098
+      },
+      {
+        "period_start": "2023-05-01",
+        "period_label": "May 2023",
+        "fines": 294860,
+        "arrests": 372,
+        "charges": 4882,
+        "total_actions": 300114
+      },
+      {
+        "period_start": "2023-06-01",
+        "period_label": "Jun 2023",
+        "fines": 283015,
+        "arrests": 364,
+        "charges": 5147,
+        "total_actions": 288526
+      },
+      {
+        "period_start": "2023-07-01",
+        "period_label": "Jul 2023",
+        "fines": 303725,
+        "arrests": 324,
+        "charges": 4727,
+        "total_actions": 308776
+      },
+      {
+        "period_start": "2023-08-01",
+        "period_label": "Aug 2023",
+        "fines": 325276,
+        "arrests": 383,
+        "charges": 5177,
+        "total_actions": 330836
+      },
+      {
+        "period_start": "2023-09-01",
+        "period_label": "Sep 2023",
+        "fines": 318612,
+        "arrests": 388,
+        "charges": 5108,
+        "total_actions": 324108
+      },
+      {
+        "period_start": "2023-10-01",
+        "period_label": "Oct 2023",
+        "fines": 327866,
+        "arrests": 349,
+        "charges": 4861,
+        "total_actions": 333076
+      },
+      {
+        "period_start": "2023-11-01",
+        "period_label": "Nov 2023",
+        "fines": 330023,
+        "arrests": 373,
+        "charges": 4630,
+        "total_actions": 335026
+      },
+      {
+        "period_start": "2023-12-01",
+        "period_label": "Dec 2023",
+        "fines": 340449,
+        "arrests": 427,
+        "charges": 5307,
+        "total_actions": 346183
+      },
+      {
+        "period_start": "2024-01-01",
+        "period_label": "Jan 2024",
+        "fines": 373374,
+        "arrests": 408,
+        "charges": 5131,
+        "total_actions": 378913
+      },
+      {
+        "period_start": "2024-02-01",
+        "period_label": "Feb 2024",
+        "fines": 362633,
+        "arrests": 337,
+        "charges": 4686,
+        "total_actions": 367656
+      },
+      {
+        "period_start": "2024-03-01",
+        "period_label": "Mar 2024",
+        "fines": 371586,
+        "arrests": 398,
+        "charges": 5324,
+        "total_actions": 377308
+      },
+      {
+        "period_start": "2024-04-01",
+        "period_label": "Apr 2024",
+        "fines": 352732,
+        "arrests": 348,
+        "charges": 4843,
+        "total_actions": 357923
+      },
+      {
+        "period_start": "2024-05-01",
+        "period_label": "May 2024",
+        "fines": 370122,
+        "arrests": 373,
+        "charges": 5222,
+        "total_actions": 375717
+      },
+      {
+        "period_start": "2024-06-01",
+        "period_label": "Jun 2024",
+        "fines": 344364,
+        "arrests": 324,
+        "charges": 5253,
+        "total_actions": 349941
+      },
+      {
+        "period_start": "2024-07-01",
+        "period_label": "Jul 2024",
+        "fines": 380774,
+        "arrests": 353,
+        "charges": 5269,
+        "total_actions": 386396
+      },
+      {
+        "period_start": "2024-08-01",
+        "period_label": "Aug 2024",
+        "fines": 373189,
+        "arrests": 446,
+        "charges": 5520,
+        "total_actions": 379155
+      },
+      {
+        "period_start": "2024-09-01",
+        "period_label": "Sep 2024",
+        "fines": 279901,
+        "arrests": 371,
+        "charges": 5144,
+        "total_actions": 285416
+      },
+      {
+        "period_start": "2024-10-01",
+        "period_label": "Oct 2024",
+        "fines": 218155,
+        "arrests": 401,
+        "charges": 5384,
+        "total_actions": 223940
+      },
+      {
+        "period_start": "2024-11-01",
+        "period_label": "Nov 2024",
+        "fines": 221469,
+        "arrests": 366,
+        "charges": 5242,
+        "total_actions": 227077
+      },
+      {
+        "period_start": "2024-12-01",
+        "period_label": "Dec 2024",
+        "fines": 240425,
+        "arrests": 486,
+        "charges": 5865,
+        "total_actions": 246776
+      }
+    ],
+    "metric_totals": [
+      {
+        "metric_key": "speed_fines",
+        "metric_label": "Speeding fines",
+        "metric_group": "Speed enforcement",
+        "fines": 59654366,
+        "arrests": 326,
+        "charges": 8152,
+        "total_actions": 59662844
+      },
+      {
+        "metric_key": "mobile_phone_use",
+        "metric_label": "Mobile phone use",
+        "metric_group": "Distraction",
+        "fines": 3139247,
+        "arrests": 19,
+        "charges": 862,
+        "total_actions": 3140128
+      },
+      {
+        "metric_key": "non_wearing_seatbelts",
+        "metric_label": "Seatbelt non-compliance",
+        "metric_group": "Vehicle safety",
+        "fines": 559222,
+        "arrests": 152,
+        "charges": 2582,
+        "total_actions": 561956
+      },
+      {
+        "metric_key": "unlicensed_driving",
+        "metric_label": "Unlicensed driving",
+        "metric_group": "Licensing",
+        "fines": 105974,
+        "arrests": 8687,
+        "charges": 111136,
+        "total_actions": 225797
+      }
+    ],
+    "latest_year_by_jurisdiction": [
+      {
+        "jurisdiction": "NSW",
+        "fines": 1157994,
+        "arrests": 0,
+        "charges": 32348,
+        "total_actions": 1190342
+      },
+      {
+        "jurisdiction": "QLD",
+        "fines": 934882,
+        "arrests": 0,
+        "charges": 0,
+        "total_actions": 934882
+      },
+      {
+        "jurisdiction": "VIC",
+        "fines": 888839,
+        "arrests": 0,
+        "charges": 0,
+        "total_actions": 888839
+      },
+      {
+        "jurisdiction": "WA",
+        "fines": 480474,
+        "arrests": 2156,
+        "charges": 19044,
+        "total_actions": 501674
+      },
+      {
+        "jurisdiction": "SA",
+        "fines": 198326,
+        "arrests": 1436,
+        "charges": 4761,
+        "total_actions": 204523
+      },
+      {
+        "jurisdiction": "ACT",
+        "fines": 96329,
+        "arrests": 232,
+        "charges": 824,
+        "total_actions": 97385
+      },
+      {
+        "jurisdiction": "TAS",
+        "fines": 82166,
+        "arrests": 19,
+        "charges": 2201,
+        "total_actions": 84386
+      },
+      {
+        "jurisdiction": "NT",
+        "fines": 49714,
+        "arrests": 768,
+        "charges": 3705,
+        "total_actions": 54187
+      }
+    ],
+    "latest_year_metric_by_jurisdiction": [
+      {
+        "jurisdiction": "NSW",
+        "metric_label": "Speeding fines",
+        "total_actions": 907211
+      },
+      {
+        "jurisdiction": "QLD",
+        "metric_label": "Speeding fines",
+        "total_actions": 794883
+      },
+      {
+        "jurisdiction": "VIC",
+        "metric_label": "Speeding fines",
+        "total_actions": 773470
+      },
+      {
+        "jurisdiction": "WA",
+        "metric_label": "Speeding fines",
+        "total_actions": 474541
+      },
+      {
+        "jurisdiction": "SA",
+        "metric_label": "Speeding fines",
+        "total_actions": 185020
+      },
+      {
+        "jurisdiction": "NSW",
+        "metric_label": "Mobile phone use",
+        "total_actions": 162205
+      },
+      {
+        "jurisdiction": "NSW",
+        "metric_label": "Seatbelt non-compliance",
+        "total_actions": 81206
+      },
+      {
+        "jurisdiction": "TAS",
+        "metric_label": "Speeding fines",
+        "total_actions": 75391
+      },
+      {
+        "jurisdiction": "QLD",
+        "metric_label": "Mobile phone use",
+        "total_actions": 75334
+      },
+      {
+        "jurisdiction": "ACT",
+        "metric_label": "Speeding fines",
+        "total_actions": 68940
+      },
+      {
+        "jurisdiction": "VIC",
+        "metric_label": "Mobile phone use",
+        "total_actions": 55075
+      },
+      {
+        "jurisdiction": "VIC",
+        "metric_label": "Seatbelt non-compliance",
+        "total_actions": 53204
+      },
+      {
+        "jurisdiction": "NT",
+        "metric_label": "Speeding fines",
+        "total_actions": 48388
+      },
+      {
+        "jurisdiction": "NSW",
+        "metric_label": "Unlicensed driving",
+        "total_actions": 39720
+      },
+      {
+        "jurisdiction": "QLD",
+        "metric_label": "Seatbelt non-compliance",
+        "total_actions": 39530
+      },
+      {
+        "jurisdiction": "ACT",
+        "metric_label": "Mobile phone use",
+        "total_actions": 27140
+      },
+      {
+        "jurisdiction": "QLD",
+        "metric_label": "Unlicensed driving",
+        "total_actions": 25135
+      },
+      {
+        "jurisdiction": "WA",
+        "metric_label": "Unlicensed driving",
+        "total_actions": 20848
+      },
+      {
+        "jurisdiction": "SA",
+        "metric_label": "Unlicensed driving",
+        "total_actions": 12376
+      },
+      {
+        "jurisdiction": "VIC",
+        "metric_label": "Unlicensed driving",
+        "total_actions": 7090
+      },
+      {
+        "jurisdiction": "SA",
+        "metric_label": "Mobile phone use",
+        "total_actions": 4605
+      },
+      {
+        "jurisdiction": "TAS",
+        "metric_label": "Seatbelt non-compliance",
+        "total_actions": 4186
+      },
+      {
+        "jurisdiction": "WA",
+        "metric_label": "Mobile phone use",
+        "total_actions": 3938
+      },
+      {
+        "jurisdiction": "NT",
+        "metric_label": "Unlicensed driving",
+        "total_actions": 3634
+      },
+      {
+        "jurisdiction": "TAS",
+        "metric_label": "Mobile phone use",
+        "total_actions": 2847
+      },
+      {
+        "jurisdiction": "SA",
+        "metric_label": "Seatbelt non-compliance",
+        "total_actions": 2522
+      },
+      {
+        "jurisdiction": "WA",
+        "metric_label": "Seatbelt non-compliance",
+        "total_actions": 2347
+      },
+      {
+        "jurisdiction": "TAS",
+        "metric_label": "Unlicensed driving",
+        "total_actions": 1962
+      },
+      {
+        "jurisdiction": "NT",
+        "metric_label": "Seatbelt non-compliance",
+        "total_actions": 1909
+      },
+      {
+        "jurisdiction": "ACT",
+        "metric_label": "Unlicensed driving",
+        "total_actions": 1238
+      },
+      {
+        "jurisdiction": "NT",
+        "metric_label": "Mobile phone use",
+        "total_actions": 256
+      },
+      {
+        "jurisdiction": "ACT",
+        "metric_label": "Seatbelt non-compliance",
+        "total_actions": 67
+      }
+    ],
+    "latest_year_detection_mix": [
+      {
+        "metric_label": "Mobile phone use",
+        "detection_method": "Fixed or mobile camera",
+        "fines": 175492
+      },
+      {
+        "metric_label": "Mobile phone use",
+        "detection_method": "Fixed camera",
+        "fines": 72314
+      },
+      {
+        "metric_label": "Mobile phone use",
+        "detection_method": "Mobile camera",
+        "fines": 42189
+      },
+      {
+        "metric_label": "Mobile phone use",
+        "detection_method": "Police issued",
+        "fines": 40931
+      },
+      {
+        "metric_label": "Mobile phone use",
+        "detection_method": "Unknown",
+        "fines": 0
+      },
+      {
+        "metric_label": "Seatbelt non-compliance",
+        "detection_method": "Fixed or mobile camera",
+        "fines": 75506
+      },
+      {
+        "metric_label": "Seatbelt non-compliance",
+        "detection_method": "Mobile camera",
+        "fines": 49127
+      },
+      {
+        "metric_label": "Seatbelt non-compliance",
+        "detection_method": "Fixed camera",
+        "fines": 36026
+      },
+      {
+        "metric_label": "Seatbelt non-compliance",
+        "detection_method": "Police issued",
+        "fines": 22655
+      },
+      {
+        "metric_label": "Seatbelt non-compliance",
+        "detection_method": "Unknown",
+        "fines": 1
+      },
+      {
+        "metric_label": "Speeding fines",
+        "detection_method": "Fixed camera",
+        "fines": 1229541
+      },
+      {
+        "metric_label": "Speeding fines",
+        "detection_method": "Mobile camera",
+        "fines": 1180460
+      },
+      {
+        "metric_label": "Speeding fines",
+        "detection_method": "Police issued",
+        "fines": 544087
+      },
+      {
+        "metric_label": "Speeding fines",
+        "detection_method": "Red light camera",
+        "fines": 303791
+      },
+      {
+        "metric_label": "Speeding fines",
+        "detection_method": "Fixed or mobile camera",
+        "fines": 54911
+      },
+      {
+        "metric_label": "Speeding fines",
+        "detection_method": "Average speed camera",
+        "fines": 10541
+      },
+      {
+        "metric_label": "Speeding fines",
+        "detection_method": "Other",
+        "fines": 1
+      },
+      {
+        "metric_label": "Speeding fines",
+        "detection_method": "Unknown",
+        "fines": 1
+      },
+      {
+        "metric_label": "Unlicensed driving",
+        "detection_method": "Not applicable",
+        "fines": 51150
+      }
+    ]
+  },
+  "notes": [
+    "The source workbook mixes police-issued and camera-issued enforcement depending on metric and jurisdiction.",
+    "Zero values are retained as observed values rather than treated as missing data.",
+    "Date serials from Excel are converted to ISO 8601 calendar dates for easier downstream use.",
+    "Future datasets can be added to catalog.json and processed with a similar normalized schema."
+  ]
+}

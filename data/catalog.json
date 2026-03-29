@@ -1,0 +1,23 @@
+{
+  "datasets": [
+    {
+      "key": "police-enforcement-fines",
+      "title": "Police enforcement fines",
+      "description": "Cleaned monthly police enforcement records published by BITRE and the National Road Safety Data Hub.",
+      "status": "ready",
+      "source_file": "police_enforcement_2024_fines.xlsx",
+      "summary_file": "police_enforcement_2024_fines.summary.json",
+      "records_file": "police_enforcement_2024_fines.cleaned.json",
+      "csv_file": "police_enforcement_2024_fines.cleaned.csv",
+      "category": "Police enforcement",
+      "reference_period": "2008-01-01 to 2024-12-31",
+      "record_count": 12179,
+      "schema_version": 1,
+      "future_agent_notes": [
+        "Append new datasets to this catalog instead of hardcoding cards in the UI.",
+        "Keep normalized field names aligned with the current cleaned JSON structure.",
+        "If a workbook introduces new metrics, update METRIC_LABELS and metric grouping rules."
+      ]
+    }
+  ]
+}
