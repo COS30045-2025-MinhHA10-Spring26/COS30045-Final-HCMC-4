@@ -1,125 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Police Enforcement Data Observatory</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <div class="page-shell">
-<header class="site-header">
-<div class="header-content">
-<p class="site-label">BITRE road safety enforcement</p>
-<h1>Police enforcement data shows where risky behaviour is being found, punished, and monitored.</h1>
-</div>
-<p class="lead-copy">
-The public record is uneven, but it is still revealing. It shows where
-speeding dominates the enforcement picture, where camera-led detection
-has changed the scale of recorded offences, and where cross-jurisdiction
-comparisons need caution because the underlying systems do not line up
-perfectly.
-</p>
-</header>
-
-      <main class="page-content">
-        <section class="panel-surface landing-panel" aria-labelledby="landing-title">
-          <div class="landing-copy">
-            <p class="section-label">National snapshot</p>
-            <h2 id="landing-title">Loading snapshot</h2>
-            <div id="landing-copy" class="landing-text"></div>
-          </div>
-          <div id="landing-highlights" class="landing-highlights"></div>
-        </section>
-
-        <section class="tabs-panel panel-surface" aria-labelledby="datasets-heading">
-          <div class="section-header section-header-row">
-            <div>
-              <p class="section-label">Explore the data</p>
-              <h2 id="datasets-heading">Roadside enforcement datasets</h2>
-            </div>
-            <p class="section-copy">
-              The tabs move from recorded sanctions to roadside testing and source
-              definitions. The fines release is live now; the remaining sections
-              are prepared for the next imported files.
-            </p>
-          </div>
-          <div id="dataset-tabs" class="dataset-tabs" role="tablist" aria-label="Police enforcement datasets"></div>
-        </section>
-
-        <section class="panel-surface hero-panel" aria-labelledby="dataset-hero-title">
-          <div class="hero-copy">
-            <p id="dataset-status" class="section-label">Loading dataset</p>
-            <h2 id="dataset-hero-title">Preparing story</h2>
-            <p id="dataset-hero-deck" class="section-copy">Loading dataset framing.</p>
-          </div>
-          <div id="hero-metrics" class="hero-metrics"></div>
-        </section>
-
-<section class="panel-surface controls-panel" aria-labelledby="controls-title">
-<div class="section-header section-header-row">
-<div>
-<p class="section-label">Refine the view</p>
-<h2 id="controls-title">Compare the same story from different angles</h2>
-</div>
-<p class="section-copy">
-Switch years, jurisdictions, and measures to test whether the same
-patterns persist or break apart.
-</p>
-</div>
-<form class="controls-grid" id="controls-form">
-<div class="year-range-control">
-<label>
-From
-<select id="year-start-select"></select>
-</label>
-<label>
-To
-<select id="year-end-select"></select>
-</label>
-</div>
-<label>
-Jurisdiction
-<select id="jurisdiction-select"></select>
-</label>
-<label>
-Measure
-<select id="measure-select"></select>
-</label>
-</form>
-</section>
-
-<section id="story-content" class="story-layout"></section>
-</main>
-
-<footer class="site-footer">
-<p>Data source: Bureau of Infrastructure and Transport Research Economics (BITRE) road safety enforcement statistics.</p>
-</footer>
-</div>
-
-    <div id="chart-tooltip" class="chart-tooltip" hidden></div>
-
-    <template id="tab-template">
-      <button class="dataset-tab" type="button" role="tab">
-        <span class="tab-title"></span>
-        <span class="tab-meta"></span>
-      </button>
-    </template>
-
-  <template id="metric-template">
-  <article class="hero-metric-card">
-  <p class="metric-label"></p>
-  <strong class="metric-value"></strong>
-  <span class="metric-meta"></span>
-  </article>
-  </template>
-
-<script type="module" src="script.js"></script>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Road Safety Enforcement Data</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js" defer></script>
+</head>
+<body>
+  <nav class="top-nav">
+    <div class="nav-inner">
+      <a href="#/" class="nav-brand">Road Safety Data</a>
+      <div class="nav-links" id="nav-links"></div>
+    </div>
+  </nav>
+  <main id="app"></main>
+  <script type="module" src="script.js"></script>
 </body>
 </html>
