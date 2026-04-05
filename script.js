@@ -1,955 +1,1505 @@
-const METRIC_COLORS = {
-  "Mobile phone use": "#8e5214",
-  "Seatbelt non-compliance": "#2f6953",
-  "Speeding fines": "#8c4f3f",
-  "Unlicensed driving": "#6f6d33",
+const CHART_COLORS = {
+  primary: "#38bdf8",
+  primaryDim: "#0ea5e9",
+  secondary: "#818cf8",
+  accent: "#fb923c",
+  green: "#34d399",
+  red: "#f87171",
+  yellow: "#fbbf24",
+  grid: "#334155",
+  text: "#94a3b8",
 };
 
-const FALLBACK_COLORS = ["#8e5214", "#2f6953", "#8c4f3f", "#6f6d33", "#c0893d", "#253040"];
+const JURISDICTION_COLORS = {
+  NSW: "#38bdf8",
+  VIC: "#818cf8",
+  QLD: "#fb923c",
+  WA: "#34d399",
+  SA: "#fbbf24",
+  TAS: "#f87171",
+  ACT: "#a78bfa",
+  NT: "#2dd4bf",
+};
 
-const elements = {
-  landingTitle: document.querySelector("#landing-title"),
-  landingCopy: document.querySelector("#landing-copy"),
-  landingHighlights: document.querySelector("#landing-highlights"),
-  datasetTabs: document.querySelector("#dataset-tabs"),
-  tabTemplate: document.querySelector("#tab-template"),
-  metricTemplate: document.querySelector("#metric-template"),
-  datasetStatus: document.querySelector("#dataset-status"),
-  datasetHeroTitle: document.querySelector("#dataset-hero-title"),
-  datasetHeroDeck: document.querySelector("#dataset-hero-deck"),
-  heroMetrics: document.querySelector("#hero-metrics"),
-  controlsPanel: document.querySelector(".controls-panel"),
-  yearStartSelect: document.querySelector("#year-start-select"),
-  yearEndSelect: document.querySelector("#year-end-select"),
-  jurisdictionSelect: document.querySelector("#jurisdiction-select"),
-  measureSelect: document.querySelector("#measure-select"),
-  storyContent: document.querySelector("#story-content"),
-  tooltip: document.querySelector("#chart-tooltip"),
+const METRIC_COLORS = {
+  "Speeding fines": "#38bdf8",
+  "Mobile phone use": "#818cf8",
+  "Seatbelt non-compliance": "#fb923c",
+  "Unlicensed driving": "#34d399",
+};
+
+const SUBSTANCE_COLORS = {
+  cannabis: "#34d399",
+  amphetamine: "#818cf8",
+  methylamphetamine: "#fb923c",
+  ecstasy: "#fbbf24",
+  cocaine: "#f87171",
+  other: "#94a3b8",
 };
 
 const state = {
   catalog: null,
-  datasets: new Map(),
-  currentDatasetKey: null,
-  yearStart: "all",
-  yearEnd: "all",
-  jurisdiction: "all",
-  measure: "total_actions",
+  summaries: {},
+  records: {},
+  charts: [],
+  filters: {
+    yearStart: null,
+    yearEnd: null,
+    jurisdiction: "all",
+    metric: "all",
+    ageGroup: "all",
+    detectionStage: "all",
+  },
 };
 
-init().catch((error) => {
-  console.error(error);
-  elements.storyContent.innerHTML = `<div class="panel-surface story-card"><div class="empty-state">Unable to load the observatory assets. Serve the project from a local web server and reload.</div></div>`;
-});
+const app = document.getElementById("app");
+const navLinks = document.getElementById("nav-links");
 
-async function init() {
+function init() {
+  window.addEventListener("hashchange", handleRoute);
+  window.addEventListener("scroll", handleScrollSpy);
+  loadCatalog().then(() => {
+    renderNav();
+    handleRoute();
+  });
+}
+
+async function loadCatalog() {
   state.catalog = await fetchJson("./data/catalog.json");
-
-  const readyDatasets = state.catalog.datasets.filter((dataset) => dataset.status === "ready");
-  const loaded = await Promise.all(
+  const readyDatasets = state.catalog.datasets.filter(
+    (d) => d.status === "ready" || d.status === "reference"
+  );
+  await Promise.all(
     readyDatasets.map(async (dataset) => {
-      const summary = await fetchJson(`./data/${dataset.summary_file}`);
-      const records = await fetchJson(`./data/${dataset.records_file}`);
-      return [dataset.key, { catalog: dataset, summary, records }];
+      if (dataset.summary_file) {
+        state.summaries[dataset.key] = await fetchJson(
+          `./data/${dataset.summary_file}`
+        );
+      }
+      if (dataset.records_file) {
+        state.records[dataset.key] = await fetchJson(
+          `./data/${dataset.records_file}`
+        );
+      }
     })
   );
-
-  loaded.forEach(([key, value]) => state.datasets.set(key, value));
-  state.currentDatasetKey = state.catalog.datasets[0]?.key || null;
-
-  bindGlobalEvents();
-  renderTabs();
-  renderDataset();
 }
 
-function bindGlobalEvents() {
-  elements.yearStartSelect.addEventListener("change", (event) => {
-    state.yearStart = event.target.value;
-    syncYearRange();
-    renderDataset();
+function renderNav() {
+  navLinks.innerHTML = state.catalog.datasets
+    .map(
+      (d) =>
+        `<a href="#/${d.key}" class="nav-link" data-key="${d.key}">${d.short_title}</a>`
+    )
+    .join("");
+}
+
+function handleRoute() {
+  const hash = window.location.hash.replace("#", "") || "/";
+  const parts = hash.split("/").filter(Boolean);
+  const page = parts[0] || "";
+
+  document.querySelectorAll(".nav-link").forEach((link) => {
+    link.classList.toggle(
+      "active",
+      link.dataset.key === page || (page === "" && link.dataset.key === undefined)
+    );
   });
 
-  elements.yearEndSelect.addEventListener("change", (event) => {
-    state.yearEnd = event.target.value;
-    syncYearRange();
-    renderDataset();
-  });
+  destroyCharts();
 
-  elements.jurisdictionSelect.addEventListener("change", (event) => {
-    state.jurisdiction = event.target.value;
-    renderDataset();
-  });
+  state.filters = {
+    yearStart: null,
+    yearEnd: null,
+    jurisdiction: "all",
+    metric: "all",
+    ageGroup: "all",
+    detectionStage: "all",
+  };
 
-  elements.measureSelect.addEventListener("change", (event) => {
-    state.measure = event.target.value;
-    renderDataset();
-  });
-
-  window.addEventListener("scroll", hideTooltip, { passive: true });
-}
-
-function syncYearRange() {
-  const years = getAllYears();
-  const startIdx = years.indexOf(state.yearStart);
-  const endIdx = years.indexOf(state.yearEnd);
-  if (startIdx !== -1 && endIdx !== -1 && startIdx > endIdx) {
-    state.yearEnd = state.yearStart;
-  }
-}
-
-function getAllYears() {
-  const dataset = state.datasets.get(state.currentDatasetKey);
-  if (!dataset) return [];
-  return [...new Set(dataset.records.map((r) => String(r.series_year)))].sort();
-}
-
-function renderTabs() {
-  elements.datasetTabs.innerHTML = "";
-
-  state.catalog.datasets.forEach((dataset) => {
-    const fragment = elements.tabTemplate.content.cloneNode(true);
-    const button = fragment.querySelector("button");
-    button.dataset.key = dataset.key;
-    button.dataset.status = dataset.status;
-    button.setAttribute("aria-selected", String(state.currentDatasetKey === dataset.key));
-    button.setAttribute("tabindex", state.currentDatasetKey === dataset.key ? "0" : "-1");
-    button.querySelector(".tab-title").textContent = dataset.short_title || dataset.title;
-    button.querySelector(".tab-meta").textContent = labelForStatus(dataset.status);
-    button.addEventListener("click", () => selectDataset(dataset.key));
-    elements.datasetTabs.appendChild(fragment);
-  });
-}
-
-function selectDataset(datasetKey) {
-  state.currentDatasetKey = datasetKey;
-  state.yearStart = "all";
-  state.yearEnd = "all";
-  state.jurisdiction = "all";
-  state.measure = "total_actions";
-  renderTabs();
-  renderDataset();
-}
-
-function renderDataset() {
-  const datasetMeta = getCurrentDatasetMeta();
-  if (!datasetMeta) {
-    return;
-  }
-
-  renderLanding(datasetMeta);
-  renderHero(datasetMeta);
-
-  if (datasetMeta.status === "ready") {
-    const dataset = state.datasets.get(datasetMeta.key);
-    renderControls(dataset.summary, dataset.records);
-    renderReadyStory(datasetMeta, dataset.summary, dataset.records);
+  if (!page || page === "/") {
+    renderHome();
+  } else if (page === "fines") {
+    renderFinesPage();
+  } else if (page === "breath-tests") {
+    renderBreathTestsPage();
+  } else if (page === "drug-tests") {
+    renderDrugTestsPage();
+  } else if (page === "about") {
+    renderAboutPage();
   } else {
-    elements.controlsPanel.hidden = true;
-    renderPlannedStory(datasetMeta);
+    app.innerHTML = `<div class="error-state"><h2>Page not found</h2><p><a href="#/">Go home</a></p></div>`;
   }
 
-  bindTooltips(elements.storyContent);
+  window.scrollTo(0, 0);
 }
 
-function renderLanding(datasetMeta) {
-  const loaded = state.datasets.get(datasetMeta.key);
-
-  if (loaded) {
-    const summary = loaded.summary;
-    const topJurisdictions = summary.aggregates.latest_year_by_jurisdiction.slice(0, 3);
-    const topMetric = summary.aggregates.metric_totals[0];
-    const latestShare = topJurisdictions.reduce((sum, row) => sum + row.total_actions, 0) / summary.latest_year_totals.total_actions;
-
-    elements.landingTitle.textContent = `What the ${summary.latest_year} enforcement record suggests`;
-    elements.landingCopy.innerHTML = [
-      `Across the latest published year, the fines dataset records <strong>${formatNumber(summary.latest_year_totals.total_actions)}</strong> enforcement actions nationwide. Most of that activity is still concentrated in fines rather than arrests or court-bound charges, which means the public record is strongest where infringement systems are most visible and most consistently reported.`,
-      `<strong>${topMetric.metric_label}</strong> dominates the national series, while ${topJurisdictions[0].jurisdiction}, ${topJurisdictions[1].jurisdiction}, and ${topJurisdictions[2].jurisdiction} together account for <strong>${formatPercent(latestShare)}</strong> of all recorded 2024 actions. That concentration is partly about population and roadway exposure, but it also reflects uneven reporting systems and detection technology across jurisdictions.`,
-    ].map((paragraph) => `<p>${paragraph}</p>`).join("");
-
-    elements.landingHighlights.innerHTML = [
-      {
-        title: "Where the pressure sits",
-        copy: `${topJurisdictions[0].jurisdiction} leads the 2024 total with ${formatNumber(topJurisdictions[0].total_actions)} recorded actions, ahead of ${topJurisdictions[1].jurisdiction} and ${topJurisdictions[2].jurisdiction}.`,
-      },
-      {
-        title: "What dominates the record",
-        copy: `${topMetric.metric_label} contributes ${formatPercent(topMetric.total_actions / summary.totals.total_actions)} of all actions in the full cleaned series, dwarfing every other category.`,
-      },
-      {
-        title: "What needs caution",
-        copy: "BITRE notes that state and territory definitions are not fully harmonised, so national patterns are useful signals, but not perfectly like-for-like comparisons.",
-      },
-    ].map((item) => `<article class="landing-note"><strong>${item.title}</strong><p>${item.copy}</p></article>`).join("");
-    return;
-  }
-
-  elements.landingTitle.textContent = datasetMeta.hero?.headline || datasetMeta.title;
-  elements.landingCopy.innerHTML = `<p>${escapeHtml(datasetMeta.hero?.deck || datasetMeta.description)}</p>`;
-  elements.landingHighlights.innerHTML = [
-    {
-      title: "Planned source",
-      copy: datasetMeta.expected_source_file || "Source file pending",
-    },
-    {
-      title: "Next question",
-      copy: datasetMeta.story_sections?.[0]?.summary || "Narrative section to be defined during import.",
-    },
-  ].map((item) => `<article class="landing-note"><strong>${escapeHtml(item.title)}</strong><p>${escapeHtml(item.copy)}</p></article>`).join("");
+function destroyCharts() {
+  state.charts.forEach((c) => c.destroy());
+  state.charts = [];
 }
 
-function renderHero(datasetMeta) {
-  const loaded = state.datasets.get(datasetMeta.key);
-  const hero = datasetMeta.hero || {};
+function handleScrollSpy() {
+  const sections = document.querySelectorAll(".chart-section[id]");
+  const tocLinks = document.querySelectorAll(".toc-link");
+  if (!sections.length || !tocLinks.length) return;
 
-  elements.datasetStatus.textContent = hero.eyebrow || labelForStatus(datasetMeta.status);
-  elements.datasetHeroTitle.textContent = hero.headline || datasetMeta.title;
-  elements.datasetHeroDeck.textContent = loaded ? buildHeroDeck(loaded.summary) : hero.deck || datasetMeta.description;
-  elements.heroMetrics.innerHTML = "";
+  let activeId = "";
+  sections.forEach((section) => {
+    const rect = section.getBoundingClientRect();
+    if (rect.top < 200) activeId = section.id;
+  });
 
-  const cards = loaded ? buildHeroMetrics(loaded.summary) : buildPlaceholderMetrics(datasetMeta);
-  cards.forEach((card) => {
-    const fragment = elements.metricTemplate.content.cloneNode(true);
-    fragment.querySelector(".metric-label").textContent = card.label;
-    fragment.querySelector(".metric-value").textContent = card.value;
-    fragment.querySelector(".metric-meta").textContent = card.meta;
-    elements.heroMetrics.appendChild(fragment);
+  tocLinks.forEach((link) => {
+    link.classList.toggle("active", link.dataset.target === activeId);
   });
 }
 
-function renderControls(summary, records) {
-  elements.controlsPanel.hidden = false;
-
-  const years = [...new Set(records.map((record) => String(record.series_year)))].sort();
-  const jurisdictions = summary.dimensions.jurisdictions;
-  const measures = [
-    { key: "total_actions", label: "Total actions" },
-    { key: "fines", label: "Fines" },
-    { key: "charges", label: "Charges" },
-    { key: "arrests", label: "Arrests" },
-  ];
-
-  elements.yearStartSelect.innerHTML = [`<option value="all">All years</option>`]
-    .concat(years.map((year) => `<option value="${year}">${year}</option>`))
-    .join("");
-  elements.yearEndSelect.innerHTML = [`<option value="all">All years</option>`]
-    .concat(years.map((year) => `<option value="${year}">${year}</option>`))
-    .join("");
-  elements.jurisdictionSelect.innerHTML = [`<option value="all">National</option>`]
-    .concat(jurisdictions.map((jurisdiction) => `<option value="${jurisdiction}">${jurisdiction}</option>`))
-    .join("");
-  elements.measureSelect.innerHTML = measures
-    .map((measure) => `<option value="${measure.key}">${measure.label}</option>`)
-    .join("");
-
-  elements.yearStartSelect.value = state.yearStart;
-  elements.yearEndSelect.value = state.yearEnd;
-  elements.jurisdictionSelect.value = state.jurisdiction;
-  elements.measureSelect.value = state.measure;
+/* ========== UTILS ========== */
+function fmt(n) {
+  return new Intl.NumberFormat("en-AU").format(n);
 }
 
-function renderReadyStory(datasetMeta, summary, records) {
-  const filtered = filterRecords(records);
-  const yearLabel = state.yearStart === "all" && state.yearEnd === "all"
-    ? String(summary.latest_year)
-    : state.yearStart === "all" && state.yearEnd !== "all"
-    ? `up to ${state.yearEnd}`
-    : state.yearStart !== "all" && state.yearEnd === "all"
-    ? `${state.yearStart} onwards`
-    : state.yearStart === state.yearEnd
-    ? state.yearStart
-    : `${state.yearStart}–${state.yearEnd}`;
-  const scopeLabel = `${state.jurisdiction === "all" ? "national" : state.jurisdiction.toLowerCase()} ${labelForMeasure(state.measure).toLowerCase()}`;
+function fmtCompact(n) {
+  return new Intl.NumberFormat("en-AU", {
+    notation: "compact",
+    maximumFractionDigits: 1,
+  }).format(n);
+}
 
-  const timeseries = aggregateBy(filtered, (record) => record.period_start, (bucket, record) => {
-    bucket.label = record.period_label;
-    bucket.value += record[state.measure];
-  }, () => ({ label: "", value: 0 }));
-  const timeseriesRows = Object.entries(timeseries)
-    .map(([period, values]) => ({ period, label: values.label, value: values.value }))
-    .sort((a, b) => a.period.localeCompare(b.period));
+function pct(n, d) {
+  if (!d) return "0%";
+  return ((n / d) * 100).toFixed(1) + "%";
+}
 
-  const metricTotals = aggregateBy(filtered, (record) => record.metric_label, (bucket, record) => {
-    bucket.value += record[state.measure];
-  }, () => ({ value: 0 }));
-  const metricRows = Object.entries(metricTotals)
-    .map(([label, values]) => ({ label, value: values.value, color: colorForMetric(label) }))
-    .sort((a, b) => b.value - a.value);
-
-  const jurisdictionYearRecords = records.filter((record) => {
-    const recordYear = String(record.series_year);
-    const matchesStart = state.yearStart === "all" || recordYear >= state.yearStart;
-    const matchesEnd = state.yearEnd === "all" || recordYear <= state.yearEnd;
-    return matchesStart && matchesEnd;
+function fetchJson(path) {
+  return fetch(path).then((r) => {
+    if (!r.ok) throw new Error(`Failed to load ${path}`);
+    return r.json();
   });
-  const heatmapRows = buildJurisdictionMetricMatrix(jurisdictionYearRecords, state.measure);
-  const detectionRows = buildDetectionBreakdown(jurisdictionYearRecords, state.jurisdiction);
-  const yearRangeLabel = state.yearStart === "all" && state.yearEnd === "all"
-    ? String(summary.latest_year)
-    : state.yearStart === state.yearEnd
-    ? state.yearStart
-    : state.yearStart + "–" + state.yearEnd;
-
-  const strongestMetric = metricRows[0];
-  const peakPeriod = [...timeseriesRows].sort((a, b) => b.value - a.value)[0];
-  const latestPeriod = timeseriesRows[timeseriesRows.length - 1];
-  const strongestJurisdiction = [...summary.aggregates.latest_year_by_jurisdiction].sort((a, b) => b[state.measure] - a[state.measure])[0];
-  const dominantDetection = detectionRows[0]?.segments[0];
-  const detectionLead = detectionRows[0];
-
-  elements.storyContent.innerHTML = [
-    createStoryCard({
-      kicker: "Chapter 1",
-      title: "Recorded enforcement rises and falls with policy, technology, and reporting scope",
-      body: [
-        `The long-run line shows that the enforcement record is not static. It expands when jurisdictions add new detection tools or broaden reporting, and it contracts when volumes fall or categories are reported differently. In the current view, the highest point lands in ${peakPeriod ? peakPeriod.label : "the selected period"}.`,
-        peakPeriod
-          ? `${capitalize(labelForMeasure(state.measure).toLowerCase())} reaches ${formatNumber(peakPeriod.value)} in ${peakPeriod.label}. The latest available point${latestPeriod ? `, ${latestPeriod.label}, sits at ${formatNumber(latestPeriod.value)}` : ""}, which helps show whether current enforcement sits above or below the earlier high-water mark.`
-          : "No peak can be calculated for the current filter.",
-      ],
-      asideTitle: "What it means",
-      asideItems: [
-        "Sharp rises can reflect new camera programs or broader counting rules, not just sudden behavioural collapse.",
-        "Flat periods suggest stable enforcement or stable reporting rather than no offending.",
-        "The jurisdiction filter helps separate national shifts from state-specific surges.",
-      ],
-      chart: createChartShell({
-        title: `Trend of ${labelForMeasure(state.measure).toLowerCase()}`,
-        subtitle: `Current scope: ${scopeLabel}`,
-        frame: timeseriesRows.length
-          ? createLineChart(timeseriesRows, labelForMeasure(state.measure))
-          : emptyState("No timeseries points match the current filters."),
-        note: `Each point represents the sum of all recorded ${labelForMeasure(state.measure).toLowerCase()} under the current filter. Sharp breaks often correspond to new reporting rules, camera programs, or category changes rather than sudden shifts in behaviour alone.`,
-      }),
-    }),
-    createStoryCard({
-      kicker: "Chapter 2",
-      title: "The national record is dominated by a small set of behaviours",
-      body: [
-        strongestMetric
-          ? `${strongestMetric.label} is the largest category in the current selection, with ${formatNumber(strongestMetric.value)} recorded ${labelForMeasure(state.measure).toLowerCase()}. That matters because it tells you which behaviour most shapes the national enforcement record before you start comparing states.`
-          : "No category is available for the current filter.",
-        `The remaining categories still matter, but they occupy a much smaller share of the visible record. In practice, this means public debate can become over-weighted toward speeding if the quieter categories are not pulled back into view deliberately.`,
-      ],
-      asideTitle: "What it suggests",
-      asideItems: [
-        "Speeding stays structurally dominant in the current release.",
-        "Smaller categories can still be policy-significant even when they are numerically minor.",
-        "Switching from fines to charges or arrests changes the balance, especially for unlicensed driving.",
-      ],
-      chart: createChartShell({
-        title: "Metric composition",
-        subtitle: `Measured as ${labelForMeasure(state.measure).toLowerCase()}`,
-        frame: metricRows.length
-          ? createHorizontalBars(metricRows, metricRows.reduce((sum, row) => sum + row.value, 0))
-          : emptyState("No metric totals match the current filters."),
-        note: "Each bar captures a distinct behavioural story, not just a rank order.",
-        legend: metricRows.map((row) => ({ label: row.label, color: row.color })),
-      }),
-    }),
-    createStoryCard({
-      kicker: "Chapter 3",
-      title: "The geography of enforcement is concentrated, not evenly spread",
-      body: [
-        `This matrix holds the comparison inside ${yearRangeLabel}, which keeps every state and territory on the same reporting year. It makes clear that the national picture is driven by a handful of large jurisdictions and by different mixes of offences inside each one.`,
-        strongestJurisdiction
-          ? `${strongestJurisdiction.jurisdiction} currently leads the published ${summary.latest_year} total with ${formatNumber(strongestJurisdiction[state.measure])} ${labelForMeasure(state.measure).toLowerCase()}. That top line should be read as both an enforcement signal and a reporting-system signal.`
-          : "Jurisdiction highlights are unavailable.",
-      ],
-      asideTitle: "Reading the pattern",
-      asideItems: [
-        "New South Wales, Queensland, and Victoria dominate the visible national total.",
-        "High values can indicate more activity, better detection coverage, or both.",
-        "The matrix is most useful for spotting unusual offence mixes within a single jurisdiction.",
-      ],
-chart: createChartShell({
-title: `Jurisdiction by metric in ${yearRangeLabel}`,
-subtitle: "A hotspot-style matrix for annual comparison",
-        frame: heatmapRows.cells.length
-          ? createHeatmap(heatmapRows)
-          : emptyState("No jurisdiction comparison is available for this year."),
-        note: "The matrix is designed to show concentration and spread at the same time.",
-      }),
-    }),
-    createStoryCard({
-      kicker: "Chapter 4",
-      title: "How an offence is detected changes what the count is really showing",
-      body: [
-        "Police-issued activity and camera-led activity should not be read as identical forms of enforcement, even when they produce the same legal outcome. Cameras tend to reflect continuous, system-level surveillance, while officer-issued sanctions reflect direct on-road interventions.",
-        detectionLead && dominantDetection
-          ? `In this view, ${detectionLead.metric} is led by ${dominantDetection.method.toLowerCase()}, which accounts for ${formatPercent(dominantDetection.share / 100)} of recorded fines in that category${state.jurisdiction === "all" ? " nationally" : ` for ${state.jurisdiction}`}.`
-          : `This final chart keeps the story in ${yearRangeLabel} and shows how fines are being detected${state.jurisdiction === "all" ? " nationally" : ` in ${state.jurisdiction}`}.`,
-      ],
-      asideTitle: "Why it matters",
-      asideItems: [
-        "A camera-heavy category can scale quickly without the same officer presence on the road.",
-        "A police-heavy category says more about direct intervention and discretionary enforcement.",
-        "The split helps explain why similar fine totals can mean different enforcement environments.",
-      ],
-      chart: createChartShell({
-        title: "Detection mix by metric",
-        subtitle: "Fine counts only, split by detection method",
-        frame: detectionRows.length
-          ? createStackedDetectionChart(detectionRows)
-          : emptyState("No detection-method detail is available for this selection."),
-        note: `Segment widths capture the proportional share of each detection method within a single metric. Camera-led enforcement typically scales differently than officer-issued sanctions, which is why this breakdown is useful for interpreting raw counts.`,
-      }),
-    }),
-    createQualityCard(summary),
-  ].join("");
 }
 
-function renderPlannedStory(datasetMeta) {
-  elements.storyContent.innerHTML = `
-    <section class="panel-surface story-card">
-      <div class="story-card-grid">
-        <div class="story-body">
-          <p class="story-kicker">Scaffold</p>
-          <div class="story-header">
-            <h2>${escapeHtml(datasetMeta.title)} is reserved but not yet imported</h2>
-            <p>${escapeHtml(datasetMeta.description)}</p>
+function createChart(el, config) {
+  const ctx = el.getContext("2d");
+  const chart = new Chart(ctx, config);
+  state.charts.push(chart);
+  return chart;
+}
+
+function chartDefaults(overrides = {}) {
+  return {
+    responsive: true,
+    maintainAspectRatio: false,
+    animation: { duration: 600, easing: "easeOutQuart" },
+    plugins: {
+      legend: {
+        labels: {
+          color: CHART_COLORS.text,
+          font: { size: 12 },
+          boxWidth: 12,
+          padding: 16,
+        },
+      },
+      tooltip: {
+        backgroundColor: "#1e293b",
+        titleColor: "#f1f5f9",
+        bodyColor: "#94a3b8",
+        borderColor: "#334155",
+        borderWidth: 1,
+        cornerRadius: 6,
+        padding: 10,
+      },
+    },
+    scales: {
+      x: {
+        ticks: { color: CHART_COLORS.text, font: { size: 11 } },
+        grid: { color: CHART_COLORS.grid, drawBorder: false },
+      },
+      y: {
+        ticks: { color: CHART_COLORS.text, font: { size: 11 } },
+        grid: { color: CHART_COLORS.grid, drawBorder: false },
+      },
+    },
+    ...overrides,
+  };
+}
+
+function renderHome() {
+  const datasets = state.catalog.datasets.filter((d) => d.status === "ready");
+  const aboutEntry = state.catalog.datasets.find((d) => d.key === "about");
+
+  app.innerHTML = `
+    <div class="home-header">
+      <h1>Australian road safety enforcement data</h1>
+      <p>Explore fines, breath tests, and drug tests from BITRE. Each dataset tells a different part of the story.</p>
+    </div>
+    <div class="dataset-grid">
+      ${datasets
+        .map(
+          (d) => `
+        <a href="#/${d.key}" class="dataset-card">
+          <div class="dataset-card-icon" style="background:${d.color}22;color:${d.color}">
+            ${getIcon(d.icon)}
           </div>
-          <p>This tab is intentionally not empty. It tells the next agent what the page should explain, what the charts should show, and which fields are expected from the source file.</p>
-        </div>
-        <aside class="story-aside">
-          <h3>Expected source</h3>
-          <p>${escapeHtml(datasetMeta.expected_source_file || "Source file pending")}</p>
-          <p class="story-footnote">Reference period: ${escapeHtml(datasetMeta.reference_period || "Not yet defined")}</p>
-        </aside>
-      </div>
-    </section>
-    <section class="placeholder-grid">
-      <article class="panel-surface placeholder-panel">
-        <h3>Story sections</h3>
-        <ul class="placeholder-list">
-          ${(datasetMeta.story_sections || []).map((section) => `<li><strong>${escapeHtml(section.title)}:</strong> ${escapeHtml(section.summary)}</li>`).join("")}
-        </ul>
-      </article>
-      <article class="panel-surface placeholder-panel">
-        <h3>Planned visuals</h3>
-        <ul class="placeholder-list">
-          ${(datasetMeta.planned_visuals || []).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
-        </ul>
-      </article>
-      <article class="panel-surface placeholder-panel">
-        <h3>Expected fields</h3>
-        <ul class="placeholder-list">
-          ${((datasetMeta.expected_fields && datasetMeta.expected_fields.length ? datasetMeta.expected_fields : ["Fields to be defined during import"]).map((field) => `<li>${escapeHtml(field)}</li>`).join(""))}
-        </ul>
-      </article>
-    </section>
-  `;
-}
-
-function buildHeroMetrics(summary) {
-  return [
-    {
-      label: "Coverage",
-      value: `${summary.period_coverage.start.slice(0, 4)}-${summary.period_coverage.end.slice(0, 4)}`,
-      meta: `${summary.period_coverage.count} reporting periods`,
-    },
-    {
-      label: `Latest year total`,
-      value: formatNumber(summary.latest_year_totals.total_actions),
-      meta: `${summary.latest_year} across fines, charges, and arrests`,
-    },
-    {
-      label: "Jurisdictions",
-      value: String(summary.dimensions.jurisdictions.length),
-      meta: summary.dimensions.jurisdictions.join(", "),
-    },
-    {
-      label: "Data quality",
-      value: summary.quality.rows_skipped === 0 ? "No skipped rows" : `${summary.quality.rows_skipped} skipped`,
-      meta: `${formatNumber(summary.record_count)} records emitted`,
-    },
-  ];
-}
-
-function buildHeroDeck(summary) {
-  const topJurisdiction = summary.aggregates.latest_year_by_jurisdiction[0];
-  const topMetric = summary.aggregates.metric_totals[0];
-  return `In ${summary.latest_year}, the dataset records ${formatNumber(summary.latest_year_totals.total_actions)} enforcement actions nationally. ${topJurisdiction.jurisdiction} carries the largest visible total, while ${topMetric.metric_label.toLowerCase()} remains the dominant category across the cleaned series.`;
-}
-
-function buildPlaceholderMetrics(datasetMeta) {
-  return [
-    {
-      label: "Status",
-      value: labelForStatus(datasetMeta.status),
-      meta: datasetMeta.expected_source_file || "Source file pending",
-    },
-    {
-      label: "Reference period",
-      value: datasetMeta.reference_period || "Planned",
-      meta: "Will update once the source file is imported",
-    },
-    {
-      label: "Story sections",
-      value: String((datasetMeta.story_sections || []).length),
-      meta: "Narrative chapters already scaffolded",
-    },
-    {
-      label: "Planned visuals",
-      value: String((datasetMeta.planned_visuals || []).length),
-      meta: "Charts reserved for future implementation",
-    },
-  ];
-}
-
-function createStoryCard({ kicker, title, body, asideTitle, asideItems, chart }) {
-  return `
-    <section class="panel-surface story-card">
-      <div class="story-card-grid">
-        <div>
-          <div class="story-header">
-            <p class="story-kicker">${escapeHtml(kicker)}</p>
-            <h2>${escapeHtml(title)}</h2>
+          <h3>${d.title}</h3>
+          <p>${d.description}</p>
+          <div class="dataset-card-meta">
+            <span><span class="status-dot"></span> ${d.reference_period}</span>
+            <span>${d.category}</span>
           </div>
-          <div class="story-body">
-            ${body.map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`).join("")}
+        </a>
+      `
+        )
+        .join("")}
+      ${
+        aboutEntry
+          ? `
+        <a href="#/about" class="dataset-card">
+          <div class="dataset-card-icon" style="background:${aboutEntry.color}22;color:${aboutEntry.color}">
+            ${getIcon(aboutEntry.icon)}
           </div>
-          ${chart}
-        </div>
-        <aside class="story-aside">
-          <h3>${escapeHtml(asideTitle)}</h3>
-          <ul>
-            ${asideItems.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
-          </ul>
-        </aside>
-      </div>
-    </section>
-  `;
-}
-
-function createChartShell({ title, subtitle, frame, note, legend = [] }) {
-  return `
-    <div class="chart-shell">
-      <div class="chart-title-row">
-        <strong>${escapeHtml(title)}</strong>
-        <span class="chart-note">${escapeHtml(subtitle)}</span>
-      </div>
-      <div class="chart-frame">${frame}</div>
-      ${legend.length ? `<div class="legend-row">${legend.map((item) => `<span class="legend-chip"><span class="legend-swatch" style="background:${item.color}"></span>${escapeHtml(item.label)}</span>`).join("")}</div>` : ""}
-      <p class="chart-note">${escapeHtml(note)}</p>
+          <h3>${aboutEntry.title}</h3>
+          <p>${aboutEntry.description}</p>
+          <div class="dataset-card-meta">
+            <span>Methodology and sources</span>
+          </div>
+        </a>
+      `
+          : ""
+      }
     </div>
   `;
 }
 
-function createQualityCard(summary) {
-  const notes = (summary.notes || []).map((note) => `<li>${escapeHtml(note)}</li>`).join("");
-  return `
-    <section class="panel-surface story-card">
-      <div class="story-card-grid">
-        <div>
-          <div class="story-header">
-            <p class="story-kicker">Method</p>
-            <h2>Cleaning is part of the story, not a hidden step</h2>
-          </div>
-          <div class="story-body">
-            <p>Every number on this page passes through a published cleaning pipeline before it reaches a chart. That pipeline converts Excel date serials to calendar dates, trims inconsistent text values, and preserves zeroes as observed values rather than erasing them as missing data.</p>
-            <p>The result is a dataset you can download and re-run, not a set of opaque chart values. That matters here because the underlying definitions vary across jurisdictions, so transparency about what was kept and what was discarded matters more than in a typical dashboard.</p>
-          </div>
-        </div>
-        <aside class="story-aside">
-          <h3>What to watch for</h3>
-          <ul>${notes}</ul>
-        </aside>
-      </div>
-    </section>
-  `;
+function getIcon(type) {
+  const icons = { fines: "⚡", breath: "🫁", drug: "💊", about: "ℹ" };
+  return icons[type] || "📊";
 }
 
-function createLineChart(points, measureLabel) {
-  const width = 840;
-  const height = 320;
-  const margin = { top: 18, right: 16, bottom: 44, left: 62 };
-  const innerWidth = width - margin.left - margin.right;
-  const innerHeight = height - margin.top - margin.bottom;
-  const maxValue = Math.max(...points.map((point) => point.value), 1);
-  const minValue = 0;
-
-  const path = points
-    .map((point, index) => {
-      const x = margin.left + (index / Math.max(points.length - 1, 1)) * innerWidth;
-      const y = scaleY(point.value, minValue, maxValue, margin.top, innerHeight);
-      return `${index === 0 ? "M" : "L"}${x},${y}`;
-    })
-    .join(" ");
-
-  const area = `${path} L ${margin.left + innerWidth},${margin.top + innerHeight} L ${margin.left},${margin.top + innerHeight} Z`;
-  const ticks = [0, 0.25, 0.5, 0.75, 1]
-    .map((step) => {
-      const value = Math.round(maxValue * step);
-      const y = scaleY(value, minValue, maxValue, margin.top, innerHeight);
-      return `
-        <line x1="${margin.left}" y1="${y}" x2="${width - margin.right}" y2="${y}" stroke="#e3d7ca"></line>
-        <text x="${margin.left - 10}" y="${y + 4}" text-anchor="end" font-size="12" fill="#665746">${formatCompactNumber(value)}</text>
-      `;
-    })
-    .join("");
-
-  const pointsMarkup = points
-    .map((point, index) => {
-      const x = margin.left + (index / Math.max(points.length - 1, 1)) * innerWidth;
-      const y = scaleY(point.value, minValue, maxValue, margin.top, innerHeight);
-      return `
-        <circle
-          class="chart-interactive"
-          cx="${x}"
-          cy="${y}"
-          r="5"
-          fill="#8e5214"
-          tabindex="0"
-          data-tooltip-title="${escapeAttribute(point.label)}"
-          data-tooltip-value="${escapeAttribute(formatNumber(point.value))} ${escapeAttribute(measureLabel.toLowerCase())}"
-          data-tooltip-meta="Period start: ${escapeAttribute(point.period)}"
-        ></circle>
-      `;
-    })
-    .join("");
-
-  return `
-    <svg viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeAttribute(measureLabel)} trend chart">
-      ${ticks}
-      <path d="${area}" fill="rgba(142, 82, 20, 0.12)"></path>
-      <path d="${path}" fill="none" stroke="#8e5214" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>
-      ${pointsMarkup}
-      <text x="${margin.left}" y="${height - 14}" font-size="12" fill="#665746">${escapeHtml(points[0].period.slice(0, 4))}</text>
-      <text x="${width - margin.right}" y="${height - 14}" text-anchor="end" font-size="12" fill="#665746">${escapeHtml(points[points.length - 1].period.slice(0, 4))}</text>
-    </svg>
-  `;
-}
-
-function createHorizontalBars(rows, total) {
-  const width = 840;
-  const barHeight = 34;
-  const gap = 14;
-  const height = rows.length * (barHeight + gap) + 16;
-  const margin = { top: 6, right: 16, bottom: 6, left: 196 };
-  const innerWidth = width - margin.left - margin.right;
-  const maxValue = Math.max(...rows.map((row) => row.value), 1);
-
-  const bars = rows
-    .map((row, index) => {
-      const y = margin.top + index * (barHeight + gap);
-      const barWidth = (row.value / maxValue) * innerWidth;
-      const share = total ? `${((row.value / total) * 100).toFixed(1)}% of current scope` : "0%";
-      return `
-        <text x="${margin.left - 12}" y="${y + 22}" text-anchor="end" font-size="12" fill="#2d2218">${escapeHtml(row.label)}</text>
-        <rect x="${margin.left}" y="${y}" width="${innerWidth}" height="${barHeight}" fill="#efe6dc" rx="4"></rect>
-        <rect
-          class="chart-interactive"
-          x="${margin.left}"
-          y="${y}"
-          width="${barWidth}"
-          height="${barHeight}"
-          fill="${row.color}"
-          rx="4"
-          tabindex="0"
-          data-tooltip-title="${escapeAttribute(row.label)}"
-          data-tooltip-value="${escapeAttribute(formatNumber(row.value))}"
-          data-tooltip-meta="${escapeAttribute(share)}"
-        ></rect>
-        <text x="${margin.left + barWidth + 8}" y="${y + 22}" font-size="12" fill="#665746">${formatCompactNumber(row.value)}</text>
-      `;
-    })
-    .join("");
-
-  return `<svg viewBox="0 0 ${width} ${height}" role="img" aria-label="Metric comparison chart">${bars}</svg>`;
-}
-
-function createHeatmap(matrix) {
-  const width = 840;
-  const rowHeight = 42;
-  const columnWidth = 132;
-  const height = 88 + matrix.rows.length * rowHeight;
-  const margin = { top: 52, left: 116 };
-
-  const labels = matrix.columns
-    .map((column, index) => `<text x="${margin.left + index * columnWidth + columnWidth / 2}" y="30" text-anchor="middle" font-size="12" fill="#665746">${escapeHtml(column.shortLabel)}</text>`)
-    .join("");
-
-  const rowLabels = matrix.rows
-    .map((row, index) => `<text x="${margin.left - 12}" y="${margin.top + index * rowHeight + 24}" text-anchor="end" font-size="12" fill="#2d2218">${escapeHtml(row)}</text>`)
-    .join("");
-
-  const cells = matrix.cells
-    .map((cell) => {
-      const x = margin.left + cell.columnIndex * columnWidth;
-      const y = margin.top + cell.rowIndex * rowHeight;
-      return `
-        <rect
-          class="chart-interactive"
-          x="${x}"
-          y="${y}"
-          width="${columnWidth - 8}"
-          height="${rowHeight - 8}"
-          rx="4"
-          fill="${cell.color}"
-          tabindex="0"
-          data-tooltip-title="${escapeAttribute(`${cell.jurisdiction} - ${cell.metric}`)}"
-          data-tooltip-value="${escapeAttribute(formatNumber(cell.value))}"
-          data-tooltip-meta="${escapeAttribute(cell.measureLabel)}"
-        ></rect>
-      `;
-    })
-    .join("");
-
-  return `
-    <svg viewBox="0 0 ${width} ${height}" role="img" aria-label="Jurisdiction hotspot matrix">
-      ${labels}
-      ${rowLabels}
-      ${cells}
-    </svg>
-  `;
-}
-
-function createStackedDetectionChart(rows) {
-  const width = 840;
-  const rowHeight = 34;
-  const gap = 16;
-  const height = rows.length * (rowHeight + gap) + 16;
-  const margin = { top: 8, right: 16, bottom: 8, left: 200 };
-  const innerWidth = width - margin.left - margin.right;
-
-  const methodColors = buildMethodColorMap(rows.flatMap((row) => row.segments.map((segment) => segment.method)));
-  let legendMarkup = Object.entries(methodColors)
-    .map(([method, color]) => `<span class="legend-chip"><span class="legend-swatch" style="background:${color}"></span>${escapeHtml(method)}</span>`)
-    .join("");
-
-  const bars = rows
-    .map((row, index) => {
-      const y = margin.top + index * (rowHeight + gap);
-      let x = margin.left;
-      const segments = row.segments
-        .map((segment) => {
-          const segmentWidth = row.total ? (segment.value / row.total) * innerWidth : 0;
-          const markup = `
-            <rect
-              class="chart-interactive"
-              x="${x}"
-              y="${y}"
-              width="${segmentWidth}"
-              height="${rowHeight}"
-              fill="${methodColors[segment.method]}"
-              rx="3"
-              tabindex="0"
-              data-tooltip-title="${escapeAttribute(row.metric)}"
-              data-tooltip-value="${escapeAttribute(formatNumber(segment.value))} fines via ${escapeAttribute(segment.method)}"
-              data-tooltip-meta="${escapeAttribute(`${segment.share.toFixed(1)}% of ${row.metric}`)}"
-            ></rect>
-          `;
-          x += segmentWidth;
-          return markup;
-        })
-        .join("");
-
-      return `
-        <text x="${margin.left - 12}" y="${y + 22}" text-anchor="end" font-size="12" fill="#2d2218">${escapeHtml(row.metric)}</text>
-        <rect x="${margin.left}" y="${y}" width="${innerWidth}" height="${rowHeight}" fill="#efe6dc" rx="4"></rect>
-        ${segments}
-        <text x="${margin.left + innerWidth + 8}" y="${y + 22}" font-size="12" fill="#665746">${formatCompactNumber(row.total)}</text>
-      `;
-    })
-    .join("");
-
-  return `
-    <div>${legendMarkup ? `<div class="legend-row">${legendMarkup}</div>` : ""}</div>
-    <svg viewBox="0 0 ${width} ${height}" role="img" aria-label="Detection method stacked bars">
-      ${bars}
-    </svg>
-  `;
-}
-
-function buildJurisdictionMetricMatrix(records, measure) {
-  const jurisdictions = [...new Set(records.map((record) => record.jurisdiction))].sort();
-  const metrics = [...new Set(records.map((record) => record.metric_label))]
-    .sort((left, right) => left.localeCompare(right))
-    .map((metric) => ({ label: metric, shortLabel: metric.replace(" non-compliance", "") }));
-
-  const values = new Map();
-  records.forEach((record) => {
-    const key = `${record.jurisdiction}__${record.metric_label}`;
-    values.set(key, (values.get(key) || 0) + record[measure]);
-  });
-
-  const maxValue = Math.max(...Array.from(values.values()), 1);
-  const cells = [];
-  jurisdictions.forEach((jurisdiction, rowIndex) => {
-    metrics.forEach((metric, columnIndex) => {
-      const value = values.get(`${jurisdiction}__${metric.label}`) || 0;
-      cells.push({
-        jurisdiction,
-        metric: metric.label,
-        value,
-        measureLabel: labelForMeasure(measure),
-        rowIndex,
-        columnIndex,
-        color: interpolateColor(value / maxValue),
-      });
-    });
-  });
-
-  return { rows: jurisdictions, columns: metrics, cells };
-}
-
-function buildDetectionBreakdown(records, jurisdiction) {
-  const relevant = jurisdiction === "all" ? records : records.filter((record) => record.jurisdiction === jurisdiction);
-  const grouped = new Map();
-
-  relevant.forEach((record) => {
-    const metricBucket = grouped.get(record.metric_label) || new Map();
-    metricBucket.set(record.detection_method, (metricBucket.get(record.detection_method) || 0) + record.fines);
-    grouped.set(record.metric_label, metricBucket);
-  });
-
-  return [...grouped.entries()]
-    .map(([metric, methodMap]) => {
-      const total = Array.from(methodMap.values()).reduce((sum, value) => sum + value, 0);
-      const segments = [...methodMap.entries()]
-        .map(([method, value]) => ({ method, value, share: total ? (value / total) * 100 : 0 }))
-        .sort((left, right) => right.value - left.value);
-      return { metric, total, segments };
-    })
-    .sort((left, right) => right.total - left.total);
-}
-
-function aggregateBy(items, keyFn, reducer, seedFactory) {
-  return items.reduce((accumulator, item) => {
-    const key = keyFn(item);
-    const current = accumulator[key] || seedFactory();
-    reducer(current, item);
-    accumulator[key] = current;
-    return accumulator;
-  }, {});
-}
-
-function filterRecords(records) {
-  return records.filter((record) => {
-    const year = String(record.series_year);
-    const matchesYearStart = state.yearStart === "all" || year >= state.yearStart;
-    const matchesYearEnd = state.yearEnd === "all" || year <= state.yearEnd;
-    const matchesYear = matchesYearStart && matchesYearEnd;
-    const matchesJurisdiction = state.jurisdiction === "all" || record.jurisdiction === state.jurisdiction;
-    return matchesYear && matchesJurisdiction;
-  });
-}
-
-function labelForMeasure(measure) {
-  if (measure === "fines") return "Fines";
-  if (measure === "charges") return "Charges";
-  if (measure === "arrests") return "Arrests";
-  return "Total actions";
-}
-
-function labelForStatus(status) {
-  if (status === "ready") return "Live now";
-  if (status === "reference") return "Reference tab";
-  return "Scaffolded next";
-}
-
-function colorForMetric(metricLabel) {
-  return METRIC_COLORS[metricLabel] || FALLBACK_COLORS[Object.keys(METRIC_COLORS).length % FALLBACK_COLORS.length];
-}
-
-function buildMethodColorMap(methods) {
-  const unique = [...new Set(methods)];
-  return unique.reduce((map, method, index) => {
-    map[method] = FALLBACK_COLORS[index % FALLBACK_COLORS.length];
-    return map;
-  }, {});
-}
-
-function interpolateColor(ratio) {
-  const clamped = Math.max(0.08, Math.min(1, ratio));
-  const lightness = 92 - clamped * 38;
-  return `hsl(28 58% ${lightness}%)`;
-}
-
-function scaleY(value, minValue, maxValue, top, innerHeight) {
-  const normalized = (value - minValue) / Math.max(maxValue - minValue, 1);
-  return top + innerHeight - normalized * innerHeight;
-}
-
-function formatNumber(value) {
-  return new Intl.NumberFormat("en-AU").format(value);
-}
-
-function formatCompactNumber(value) {
-  return new Intl.NumberFormat("en-AU", { notation: "compact", maximumFractionDigits: 1 }).format(value);
-}
-
-function formatPercent(value) {
-  return new Intl.NumberFormat("en-AU", { style: "percent", maximumFractionDigits: 1 }).format(value);
-}
-
-function capitalize(text) {
-  return text.charAt(0).toUpperCase() + text.slice(1);
-}
-
-function getCurrentDatasetMeta() {
-  return state.catalog.datasets.find((dataset) => dataset.key === state.currentDatasetKey) || null;
-}
-
-function bindTooltips(scope) {
-  scope.querySelectorAll(".chart-interactive").forEach((node) => {
-    node.addEventListener("mouseenter", showTooltip);
-    node.addEventListener("mousemove", moveTooltip);
-    node.addEventListener("mouseleave", hideTooltip);
-    node.addEventListener("focus", showTooltip);
-    node.addEventListener("blur", hideTooltip);
-  });
-}
-
-function showTooltip(event) {
-  const node = event.currentTarget;
-  const title = node.dataset.tooltipTitle;
-  const value = node.dataset.tooltipValue;
-  const meta = node.dataset.tooltipMeta;
-  elements.tooltip.innerHTML = `
-    <span class="tooltip-title">${escapeHtml(title)}</span>
-    <div>${escapeHtml(value)}</div>
-    ${meta ? `<div class="tooltip-meta">${escapeHtml(meta)}</div>` : ""}
-  `;
-  elements.tooltip.hidden = false;
-  moveTooltip(event);
-}
-
-function moveTooltip(event) {
-  if (elements.tooltip.hidden) {
+/* ========== FINES PAGE ========== */
+function renderFinesPage() {
+  const summary = state.summaries.fines;
+  const records = state.records.fines;
+  if (!summary || !records) {
+    app.innerHTML = `<div class="loading">Loading fines data…</div>`;
     return;
   }
-  const pointX = event.clientX || event.currentTarget.getBoundingClientRect().left + 24;
-  const pointY = event.clientY || event.currentTarget.getBoundingClientRect().top + 24;
-  elements.tooltip.style.left = `${pointX + 16}px`;
-  elements.tooltip.style.top = `${pointY + 16}px`;
+
+  const years = [...new Set(records.map((r) => r.series_year))].sort();
+  const jurisdictions = ["all", ...summary.dimensions.jurisdictions];
+  const metrics = [
+    { key: "all", label: "All metrics" },
+    { key: "speed_fines", label: "Speeding fines" },
+    { key: "mobile_phone_use", label: "Mobile phone use" },
+    { key: "non_wearing_seatbelts", label: "Seatbelt non-compliance" },
+    { key: "unlicensed_driving", label: "Unlicensed driving" },
+  ];
+
+  const sections = [
+    { id: "trend", title: "Enforcement over time" },
+    { id: "metrics", title: "Offence breakdown" },
+    { id: "jurisdictions", title: "By jurisdiction" },
+    { id: "detection", title: "Detection methods" },
+    { id: "comparison", title: "Offences compared" },
+    { id: "heatmap", title: "Enforcement mix" },
+  ];
+
+  state.filters.yearStart = years[0];
+  state.filters.yearEnd = summary.latest_year;
+
+  const speedTotal = summary.aggregates.metric_totals.find(
+    (m) => m.metric_key === "speed_fines"
+  );
+  const totalActions = summary.totals.total_actions;
+
+  app.innerHTML = `
+    <div class="dataset-page">
+      <nav class="toc-sidebar">
+        <h4>Sections</h4>
+        ${sections.map((s) => `<a href="#${s.id}" class="toc-link" data-target="${s.id}">${s.title}</a>`).join("")}
+      </nav>
+      <div class="dataset-content">
+        <div class="dynamic-header" id="dynamic-header">
+          <h2>Speeding is fined <span class="stat-number">${fmtCompact(speedTotal.fines)}</span> times across the dataset</h2>
+          <p>That's ${pct(speedTotal.total_actions, totalActions)} of all enforcement actions from ${summary.period_coverage.start.slice(0, 4)} to ${summary.period_coverage.end.slice(0, 4)}.</p>
+        </div>
+        <div class="filter-bar" id="filter-bar">
+          <div class="filter-group">
+            <label>From year</label>
+            <select id="fines-year-start">${years.map((y) => `<option value="${y}">${y}</option>`).join("")}</select>
+          </div>
+          <div class="filter-group">
+            <label>To year</label>
+            <select id="fines-year-end">${years.map((y) => `<option value="${y}" ${y === summary.latest_year ? "selected" : ""}>${y}</option>`).join("")}</select>
+          </div>
+          <div class="filter-group">
+            <label>Jurisdiction</label>
+            <select id="fines-jurisdiction">${jurisdictions.map((j) => `<option value="${j}">${j === "all" ? "All" : j}</option>`).join("")}</select>
+          </div>
+          <div class="filter-group">
+            <label>Metric</label>
+            <select id="fines-metric">${metrics.map((m) => `<option value="${m.key}">${m.label}</option>`).join("")}</select>
+          </div>
+        </div>
+        <div class="stat-row" id="stat-row"></div>
+        <div class="chart-section" id="trend">
+          <h3>Enforcement actions over time</h3>
+          <p class="chart-desc">Annual total of fines, charges, and arrests. Note the reporting change in 2023 when monthly data became available.</p>
+          <div class="chart-container"><canvas id="fines-trend"></canvas></div>
+        </div>
+        <div class="chart-section" id="metrics">
+          <h3>Which offences dominate the record</h3>
+          <p class="chart-desc">Total actions by metric across the selected period.</p>
+          <div class="chart-container"><canvas id="fines-metrics"></canvas></div>
+        </div>
+        <div class="chart-section" id="jurisdictions">
+          <h3>Enforcement by jurisdiction</h3>
+          <p class="chart-desc">Annual totals for each state and territory.</p>
+          <div class="chart-container"><canvas id="fines-jurisdictions"></canvas></div>
+        </div>
+        <div class="chart-section" id="detection">
+          <h3>How offences are detected</h3>
+          <p class="chart-desc">Camera-led versus police-issued fines. The detection method changes what the count really means.</p>
+          <div class="chart-container"><canvas id="fines-detection"></canvas></div>
+        </div>
+        <div class="chart-section" id="comparison">
+          <h3>Speeding versus other offences</h3>
+          <p class="chart-desc">Annual comparison showing whether speeding growth tracks with mobile phone or seatbelt enforcement.</p>
+          <div class="chart-container"><canvas id="fines-comparison"></canvas></div>
+        </div>
+        <div class="chart-section" id="heatmap">
+          <h3>Jurisdiction enforcement mix</h3>
+          <p class="chart-desc">How each state's enforcement is distributed across offence types.</p>
+          <div class="chart-container"><canvas id="fines-heatmap"></canvas></div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.getElementById("fines-year-start").value = years[0];
+  document.getElementById("fines-year-end").value = summary.latest_year;
+
+  bindFinesFilters(records, summary);
+  updateFinesView(records, summary);
 }
 
-function hideTooltip() {
-  elements.tooltip.hidden = true;
+function bindFinesFilters(records, summary) {
+  const update = () => {
+    state.filters.yearStart = document.getElementById("fines-year-start").value;
+    state.filters.yearEnd = document.getElementById("fines-year-end").value;
+    state.filters.jurisdiction = document.getElementById("fines-jurisdiction").value;
+    state.filters.metric = document.getElementById("fines-metric").value;
+    updateFinesView(records, summary);
+  };
+
+  ["fines-year-start", "fines-year-end", "fines-jurisdiction", "fines-metric"].forEach(
+    (id) => document.getElementById(id).addEventListener("change", update)
+  );
 }
 
-function emptyState(message) {
-  return `<div class="empty-state">${escapeHtml(message)}</div>`;
+function updateFinesView(records, summary) {
+  const { yearStart, yearEnd, jurisdiction, metric } = state.filters;
+
+  const filtered = records.filter((r) => {
+    const y = r.series_year;
+    if (yearStart && y < parseInt(yearStart)) return false;
+    if (yearEnd && y > parseInt(yearEnd)) return false;
+    if (jurisdiction !== "all" && r.jurisdiction !== jurisdiction) return false;
+    if (metric !== "all" && r.metric_key !== metric) return false;
+    return true;
+  });
+
+  updateFinesHeader(filtered, summary);
+  updateFinesStats(filtered, summary);
+  destroyCharts();
+  drawFinesTrend(filtered);
+  drawFinesMetrics(filtered);
+  drawFinesJurisdictions(filtered);
+  drawFinesDetection(filtered);
+  drawFinesComparison(filtered);
+  drawFinesHeatmap(filtered);
 }
 
-function escapeHtml(value) {
-  return String(value)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#39;");
-}
+function updateFinesHeader(records, summary) {
+  const totalActions = records.reduce((s, r) => s + r.total_actions, 0);
+  const finesCount = records.reduce((s, r) => s + r.fines, 0);
+  const years = [...new Set(records.map((r) => r.series_year))];
+  const yearRange = years.length ? `${Math.min(...years)}–${Math.max(...years)}` : "no data";
 
-function escapeAttribute(value) {
-  return escapeHtml(value);
-}
+  const header = document.getElementById("dynamic-header");
+  if (!header) return;
 
-async function fetchJson(path) {
-  const response = await fetch(path);
-  if (!response.ok) {
-    throw new Error(`Failed to load ${path}`);
+  if (state.filters.metric !== "all") {
+    const metricLabel = records[0]?.metric_label || state.filters.metric;
+    header.querySelector("h2").innerHTML = `<span class="stat-number">${fmtCompact(totalActions)}</span> ${metricLabel.toLowerCase()} actions from ${yearRange}`;
+    header.querySelector("p").textContent = `Across ${records.length} data points in ${state.filters.jurisdiction === "all" ? "all jurisdictions" : state.filters.jurisdiction}.`;
+  } else if (state.filters.jurisdiction !== "all") {
+    header.querySelector("h2").innerHTML = `<span class="stat-number">${fmtCompact(totalActions)}</span> total enforcement actions in ${state.filters.jurisdiction}`;
+    header.querySelector("p").textContent = `From ${yearRange}. Speeding accounts for ${pct(records.filter(r => r.metric_key === "speed_fines").reduce((s, r) => s + r.total_actions, 0), totalActions)} of these actions.`;
+  } else {
+    const speedTotal = records.filter((r) => r.metric_key === "speed_fines").reduce((s, r) => s + r.fines, 0);
+    header.querySelector("h2").innerHTML = `Speeding is fined <span class="stat-number">${fmtCompact(speedTotal)}</span> times in the selected range`;
+    header.querySelector("p").textContent = `That's ${pct(records.filter(r => r.metric_key === "speed_fines").reduce((s, r) => s + r.total_actions, 0), totalActions)} of all enforcement actions from ${yearRange}.`;
   }
-  return response.json();
 }
+
+function updateFinesStats(records, summary) {
+  const totalActions = records.reduce((s, r) => s + r.total_actions, 0);
+  const totalFines = records.reduce((s, r) => s + r.fines, 0);
+  const totalCharges = records.reduce((s, r) => s + r.charges, 0);
+  const totalArrests = records.reduce((s, r) => s + r.arrests, 0);
+  const jurisdictions = [...new Set(records.map((r) => r.jurisdiction))].length;
+  const years = [...new Set(records.map((r) => r.series_year))].length;
+
+  const statRow = document.getElementById("stat-row");
+  if (!statRow) return;
+
+  statRow.innerHTML = `
+    <div class="stat-box">
+      <div class="stat-label">Total actions</div>
+      <div class="stat-value">${fmtCompact(totalActions)}</div>
+      <div class="stat-sub">${years} years, ${jurisdictions} jurisdictions</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-label">Fines</div>
+      <div class="stat-value">${fmtCompact(totalFines)}</div>
+      <div class="stat-sub">${pct(totalFines, totalActions)} of actions</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-label">Charges</div>
+      <div class="stat-value">${fmtCompact(totalCharges)}</div>
+      <div class="stat-sub">${pct(totalCharges, totalActions)} of actions</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-label">Arrests</div>
+      <div class="stat-value">${fmtCompact(totalArrests)}</div>
+      <div class="stat-sub">${pct(totalArrests, totalActions)} of actions</div>
+    </div>
+  `;
+}
+
+function drawFinesTrend(records) {
+  const annual = {};
+  records.forEach((r) => {
+    if (!annual[r.series_year]) annual[r.series_year] = { fines: 0, arrests: 0, charges: 0 };
+    annual[r.series_year].fines += r.fines;
+    annual[r.series_year].arrests += r.arrests;
+    annual[r.series_year].charges += r.charges;
+  });
+
+  const years = Object.keys(annual).sort();
+  const canvas = document.getElementById("fines-trend");
+  if (!canvas) return;
+
+  createChart(canvas, {
+    type: "line",
+    data: {
+      labels: years,
+      datasets: [
+        {
+          label: "Fines",
+          data: years.map((y) => annual[y].fines),
+          borderColor: CHART_COLORS.primary,
+          backgroundColor: CHART_COLORS.primary + "18",
+          fill: true,
+          tension: 0.3,
+          pointRadius: years.length > 20 ? 0 : 3,
+          pointHoverRadius: 5,
+          borderWidth: 2,
+        },
+        {
+          label: "Charges",
+          data: years.map((y) => annual[y].charges),
+          borderColor: CHART_COLORS.accent,
+          backgroundColor: "transparent",
+          tension: 0.3,
+          pointRadius: 0,
+          borderWidth: 2,
+        },
+        {
+          label: "Arrests",
+          data: years.map((y) => annual[y].arrests),
+          borderColor: CHART_COLORS.red,
+          backgroundColor: "transparent",
+          tension: 0.3,
+          pointRadius: 0,
+          borderWidth: 2,
+        },
+      ],
+    },
+    options: chartDefaults({
+      scales: {
+        ...chartDefaults().scales,
+        y: {
+          ...chartDefaults().scales.y,
+          ticks: { ...chartDefaults().scales.y.ticks, callback: (v) => fmtCompact(v) },
+        },
+      },
+    }),
+  });
+}
+
+function drawFinesMetrics(records) {
+  const totals = {};
+  records.forEach((r) => {
+    totals[r.metric_label] = (totals[r.metric_label] || 0) + r.total_actions;
+  });
+
+  const sorted = Object.entries(totals).sort((a, b) => b[1] - a[1]);
+  const canvas = document.getElementById("fines-metrics");
+  if (!canvas) return;
+
+  createChart(canvas, {
+    type: "bar",
+    data: {
+      labels: sorted.map((s) => s[0]),
+      datasets: [{
+        data: sorted.map((s) => s[1]),
+        backgroundColor: sorted.map((s) => METRIC_COLORS[s[0]] || CHART_COLORS.primary),
+        borderRadius: 4,
+        barPercentage: 0.7,
+      }],
+    },
+    options: chartDefaults({
+      indexAxis: "y",
+      plugins: { ...chartDefaults().plugins, legend: { display: false } },
+      scales: {
+        ...chartDefaults().scales,
+        x: {
+          ...chartDefaults().scales.x,
+          ticks: { ...chartDefaults().scales.x.ticks, callback: (v) => fmtCompact(v) },
+        },
+      },
+    }),
+  });
+}
+
+function drawFinesJurisdictions(records) {
+  const byYearJurisdiction = {};
+  records.forEach((r) => {
+    const key = `${r.series_year}-${r.jurisdiction}`;
+    byYearJurisdiction[key] = (byYearJurisdiction[key] || 0) + r.total_actions;
+  });
+
+  const years = [...new Set(records.map((r) => r.series_year))].sort();
+  const jurisdictions = [...new Set(records.map((r) => r.jurisdiction))].sort();
+  const canvas = document.getElementById("fines-jurisdictions");
+  if (!canvas) return;
+
+  createChart(canvas, {
+    type: "line",
+    data: {
+      labels: years,
+      datasets: jurisdictions.map((j) => ({
+        label: j,
+        data: years.map((y) => byYearJurisdiction[`${y}-${j}`] || 0),
+        borderColor: JURISDICTION_COLORS[j] || CHART_COLORS.primary,
+        backgroundColor: "transparent",
+        tension: 0.3,
+        pointRadius: 0,
+        borderWidth: 2,
+      })),
+    },
+    options: chartDefaults({
+      scales: {
+        ...chartDefaults().scales,
+        y: {
+          ...chartDefaults().scales.y,
+          ticks: { ...chartDefaults().scales.y.ticks, callback: (v) => fmtCompact(v) },
+        },
+      },
+    }),
+  });
+}
+
+function drawFinesDetection(records) {
+  const byMetricMethod = {};
+  records.forEach((r) => {
+    if (r.fines === 0) return;
+    const key = `${r.metric_label}||${r.detection_method}`;
+    byMetricMethod[key] = (byMetricMethod[key] || 0) + r.fines;
+  });
+
+  const metrics = [...new Set(records.map((r) => r.metric_label))].filter(
+    (m) => m !== "Unlicensed driving"
+  );
+  const methods = [...new Set(records.map((r) => r.detection_method))].filter(
+    (m) => m !== "Not applicable" && m !== "Unknown"
+  );
+
+  const methodColors = {
+    "Fixed camera": "#38bdf8",
+    "Mobile camera": "#818cf8",
+    "Police issued": "#fb923c",
+    "Red light camera": "#34d399",
+    "Fixed or mobile camera": "#a78bfa",
+    "Average speed camera": "#fbbf24",
+  };
+
+  const canvas = document.getElementById("fines-detection");
+  if (!canvas) return;
+
+  createChart(canvas, {
+    type: "bar",
+    data: {
+      labels: metrics,
+      datasets: methods.map((method) => ({
+        label: method,
+        data: metrics.map((metric) => byMetricMethod[`${metric}||${method}`] || 0),
+        backgroundColor: methodColors[method] || CHART_COLORS.primary,
+        borderRadius: 2,
+      })),
+    },
+    options: chartDefaults({
+      scales: {
+        ...chartDefaults().scales,
+        x: { ...chartDefaults().scales.x, stacked: true },
+        y: {
+          ...chartDefaults().scales.y,
+          stacked: true,
+          ticks: { ...chartDefaults().scales.y.ticks, callback: (v) => fmtCompact(v) },
+        },
+      },
+    }),
+  });
+}
+
+function drawFinesComparison(records) {
+  const annualMetric = {};
+  records.forEach((r) => {
+    if (!annualMetric[r.series_year]) annualMetric[r.series_year] = {};
+    annualMetric[r.series_year][r.metric_label] =
+      (annualMetric[r.series_year][r.metric_label] || 0) + r.total_actions;
+  });
+
+  const years = Object.keys(annualMetric).sort();
+  const metricKeys = ["Speeding fines", "Mobile phone use", "Seatbelt non-compliance"];
+  const canvas = document.getElementById("fines-comparison");
+  if (!canvas) return;
+
+  createChart(canvas, {
+    type: "line",
+    data: {
+      labels: years,
+      datasets: metricKeys.map((m) => ({
+        label: m,
+        data: years.map((y) => annualMetric[y]?.[m] || 0),
+        borderColor: METRIC_COLORS[m] || CHART_COLORS.primary,
+        backgroundColor: "transparent",
+        tension: 0.3,
+        pointRadius: 0,
+        borderWidth: 2,
+      })),
+    },
+    options: chartDefaults({
+      scales: {
+        ...chartDefaults().scales,
+        y: {
+          ...chartDefaults().scales.y,
+          ticks: { ...chartDefaults().scales.y.ticks, callback: (v) => fmtCompact(v) },
+        },
+      },
+    }),
+  });
+}
+
+function drawFinesHeatmap(records) {
+  const jurisdictions = [...new Set(records.map((r) => r.jurisdiction))].sort();
+  const metrics = [...new Set(records.map((r) => r.metric_label))];
+
+  const data = jurisdictions.map((j) => {
+    const row = { jurisdiction: j };
+    metrics.forEach((m) => {
+      row[m] = records
+        .filter((r) => r.jurisdiction === j && r.metric_label === m)
+        .reduce((sum, r) => sum + r.total_actions, 0);
+    });
+    return row;
+  });
+
+  const canvas = document.getElementById("fines-heatmap");
+  if (!canvas) return;
+
+  createChart(canvas, {
+    type: "bar",
+    data: {
+      labels: jurisdictions,
+      datasets: metrics.map((m) => ({
+        label: m,
+        data: data.map((d) => d[m]),
+        backgroundColor: (METRIC_COLORS[m] || CHART_COLORS.primary) + "cc",
+        borderRadius: 2,
+      })),
+    },
+    options: chartDefaults({
+      scales: {
+        ...chartDefaults().scales,
+        x: { ...chartDefaults().scales.x, stacked: true },
+        y: {
+          ...chartDefaults().scales.y,
+          stacked: true,
+          ticks: { ...chartDefaults().scales.y.ticks, callback: (v) => fmtCompact(v) },
+        },
+      },
+    }),
+  });
+}
+
+/* ========== BREATH TESTS PAGE ========== */
+function renderBreathTestsPage() {
+  const summary = state.summaries["breath-tests"];
+  const records = state.records["breath-tests"];
+  if (!summary || !records) {
+    app.innerHTML = `<div class="loading">Loading breath test data…</div>`;
+    return;
+  }
+
+  const years = [...new Set(records.map((r) => r.series_year))].sort();
+  const jurisdictions = ["all", ...summary.dimensions.jurisdictions];
+  const ageGroups = ["all", ...summary.dimensions.age_groups.filter((a) => a !== "All ages")];
+
+  const sections = [
+    { id: "trend", title: "Trend over time" },
+    { id: "jurisdictions", title: "By jurisdiction" },
+    { id: "age", title: "By age group" },
+    { id: "indexed", title: "Indexed comparison" },
+  ];
+
+  state.filters.yearStart = years[0];
+  state.filters.yearEnd = summary.latest_year;
+
+  const totalTests = summary.totals.total_positive_tests;
+  const latestTotal = summary.latest_year_totals.total_positive_tests;
+  const topJurisdiction = summary.aggregates.by_jurisdiction[0];
+
+  app.innerHTML = `
+    <div class="dataset-page">
+      <nav class="toc-sidebar">
+        <h4>Sections</h4>
+        ${sections.map((s) => `<a href="#${s.id}" class="toc-link" data-target="${s.id}">${s.title}</a>`).join("")}
+      </nav>
+      <div class="dataset-content">
+        <div class="dynamic-header" id="dynamic-header">
+          <h2><span class="stat-number">${fmt(totalTests)}</span> positive breath tests from 2008 to 2024</h2>
+          <p>In ${summary.latest_year} alone, ${fmt(latestTotal)} drivers tested positive across Australia.</p>
+        </div>
+        <div class="filter-bar" id="filter-bar">
+          <div class="filter-group">
+            <label>From year</label>
+            <select id="breath-year-start">${years.map((y) => `<option value="${y}">${y}</option>`).join("")}</select>
+          </div>
+          <div class="filter-group">
+            <label>To year</label>
+            <select id="breath-year-end">${years.map((y) => `<option value="${y}" ${y === summary.latest_year ? "selected" : ""}>${y}</option>`).join("")}</select>
+          </div>
+          <div class="filter-group">
+            <label>Jurisdiction</label>
+            <select id="breath-jurisdiction">${jurisdictions.map((j) => `<option value="${j}">${j === "all" ? "All" : j}</option>`).join("")}</select>
+          </div>
+          <div class="filter-group">
+            <label>Age group</label>
+            <select id="breath-age">${ageGroups.map((a) => `<option value="${a}">${a}</option>`).join("")}</select>
+          </div>
+        </div>
+        <div class="stat-row" id="stat-row"></div>
+        <div class="chart-section" id="trend">
+          <h3>Positive breath tests over time</h3>
+          <p class="chart-desc">Annual trend by jurisdiction.</p>
+          <div class="chart-container"><canvas id="breath-trend"></canvas></div>
+        </div>
+        <div class="chart-section" id="jurisdictions">
+          <h3>Which jurisdictions have the most positives</h3>
+          <p class="chart-desc">Total positive tests by jurisdiction in the selected period.</p>
+          <div class="chart-container"><canvas id="breath-jurisdictions"></canvas></div>
+        </div>
+        <div class="chart-section" id="age">
+          <h3>Positives by age group</h3>
+          <p class="chart-desc">How positive detections are distributed across age groups.</p>
+          <div class="chart-container"><canvas id="breath-age"></canvas></div>
+        </div>
+        <div class="chart-section" id="indexed">
+          <h3>Jurisdiction trends compared</h3>
+          <p class="chart-desc">Indexed to the first year = 100, showing relative change rather than raw volume.</p>
+          <div class="chart-container"><canvas id="breath-indexed"></canvas></div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.getElementById("breath-year-start").value = years[0];
+  document.getElementById("breath-year-end").value = summary.latest_year;
+
+  bindBreathFilters(records, summary);
+  updateBreathView(records, summary);
+}
+
+function bindBreathFilters(records, summary) {
+  const update = () => {
+    state.filters.yearStart = document.getElementById("breath-year-start").value;
+    state.filters.yearEnd = document.getElementById("breath-year-end").value;
+    state.filters.jurisdiction = document.getElementById("breath-jurisdiction").value;
+    state.filters.ageGroup = document.getElementById("breath-age").value;
+    updateBreathView(records, summary);
+  };
+
+  ["breath-year-start", "breath-year-end", "breath-jurisdiction", "breath-age"].forEach(
+    (id) => document.getElementById(id).addEventListener("change", update)
+  );
+}
+
+function updateBreathView(records, summary) {
+  const { yearStart, yearEnd, jurisdiction, ageGroup } = state.filters;
+
+  const filtered = records.filter((r) => {
+    const y = r.series_year;
+    if (yearStart && y < parseInt(yearStart)) return false;
+    if (yearEnd && y > parseInt(yearEnd)) return false;
+    if (jurisdiction !== "all" && r.jurisdiction !== jurisdiction) return false;
+    if (ageGroup && ageGroup !== "all" && r.age_group !== ageGroup) return false;
+    return true;
+  });
+
+  updateBreathHeader(filtered, summary);
+  updateBreathStats(filtered, summary);
+  destroyCharts();
+  drawBreathTrend(filtered);
+  drawBreathJurisdictions(filtered);
+  drawBreathAge(filtered);
+  drawBreathIndexed(filtered);
+}
+
+function updateBreathHeader(records, summary) {
+  const total = records.reduce((s, r) => s + r.count, 0);
+  const years = [...new Set(records.map((r) => r.series_year))];
+  const yearRange = years.length ? `${Math.min(...years)}–${Math.max(...years)}` : "no data";
+
+  const header = document.getElementById("dynamic-header");
+  if (!header) return;
+
+  if (state.filters.jurisdiction !== "all") {
+    header.querySelector("h2").innerHTML = `<span class="stat-number">${fmtCompact(total)}</span> positive breath tests in ${state.filters.jurisdiction}`;
+    header.querySelector("p").textContent = `From ${yearRange}.`;
+  } else {
+    header.querySelector("h2").innerHTML = `<span class="stat-number">${fmtCompact(total)}</span> positive breath tests from ${yearRange}`;
+    header.querySelector("p").textContent = `Across all jurisdictions.`;
+  }
+}
+
+function updateBreathStats(records, summary) {
+  const total = records.reduce((s, r) => s + r.count, 0);
+  const jurisdictions = [...new Set(records.map((r) => r.jurisdiction))].length;
+  const years = [...new Set(records.map((r) => r.series_year))].length;
+  const byJurisdiction = {};
+  records.forEach((r) => { byJurisdiction[r.jurisdiction] = (byJurisdiction[r.jurisdiction] || 0) + r.count; });
+  const top = Object.entries(byJurisdiction).sort((a, b) => b[1] - a[1])[0];
+
+  const statRow = document.getElementById("stat-row");
+  if (!statRow) return;
+
+  statRow.innerHTML = `
+    <div class="stat-box">
+      <div class="stat-label">Total positives</div>
+      <div class="stat-value">${fmtCompact(total)}</div>
+      <div class="stat-sub">${years} years</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-label">Jurisdictions</div>
+      <div class="stat-value">${jurisdictions}</div>
+      <div class="stat-sub">States and territories</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-label">Highest</div>
+      <div class="stat-value">${top ? top[0] : "—"}</div>
+      <div class="stat-sub">${top ? fmtCompact(top[1]) : ""} total</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-label">Records</div>
+      <div class="stat-value">${fmt(records.length)}</div>
+      <div class="stat-sub">Annual data points</div>
+    </div>
+  `;
+}
+
+function drawBreathTrend(records) {
+  const byYearJurisdiction = {};
+  records.forEach((r) => {
+    const key = `${r.series_year}-${r.jurisdiction}`;
+    byYearJurisdiction[key] = (byYearJurisdiction[key] || 0) + r.count;
+  });
+
+  const years = [...new Set(records.map((r) => r.series_year))].sort();
+  const jurisdictions = [...new Set(records.map((r) => r.jurisdiction))].sort();
+  const canvas = document.getElementById("breath-trend");
+  if (!canvas) return;
+
+  createChart(canvas, {
+    type: "line",
+    data: {
+      labels: years,
+      datasets: jurisdictions.map((j) => ({
+        label: j,
+        data: years.map((y) => byYearJurisdiction[`${y}-${j}`] || 0),
+        borderColor: JURISDICTION_COLORS[j] || CHART_COLORS.primary,
+        backgroundColor: "transparent",
+        tension: 0.3,
+        pointRadius: 0,
+        borderWidth: 2,
+      })),
+    },
+    options: chartDefaults({
+      scales: {
+        ...chartDefaults().scales,
+        y: {
+          ...chartDefaults().scales.y,
+          ticks: { ...chartDefaults().scales.y.ticks, callback: (v) => fmtCompact(v) },
+        },
+      },
+    }),
+  });
+}
+
+function drawBreathJurisdictions(records) {
+  const byJurisdiction = {};
+  records.forEach((r) => { byJurisdiction[r.jurisdiction] = (byJurisdiction[r.jurisdiction] || 0) + r.count; });
+
+  const sorted = Object.entries(byJurisdiction).sort((a, b) => b[1] - a[1]);
+  const canvas = document.getElementById("breath-jurisdictions");
+  if (!canvas) return;
+
+  createChart(canvas, {
+    type: "bar",
+    data: {
+      labels: sorted.map((s) => s[0]),
+      datasets: [{
+        data: sorted.map((s) => s[1]),
+        backgroundColor: sorted.map((s) => JURISDICTION_COLORS[s[0]] || CHART_COLORS.primary),
+        borderRadius: 4,
+        barPercentage: 0.7,
+      }],
+    },
+    options: chartDefaults({
+      indexAxis: "y",
+      plugins: { ...chartDefaults().plugins, legend: { display: false } },
+      scales: {
+        ...chartDefaults().scales,
+        x: {
+          ...chartDefaults().scales.x,
+          ticks: { ...chartDefaults().scales.x.ticks, callback: (v) => fmtCompact(v) },
+        },
+      },
+    }),
+  });
+}
+
+function drawBreathAge(records) {
+  const byAge = {};
+  records.forEach((r) => { byAge[r.age_group] = (byAge[r.age_group] || 0) + r.count; });
+
+  const sorted = Object.entries(byAge)
+    .filter(([k]) => k !== "Unknown" && k !== "All ages")
+    .sort((a, b) => b[1] - a[1]);
+
+  const canvas = document.getElementById("breath-age");
+  if (!canvas) return;
+
+  createChart(canvas, {
+    type: "bar",
+    data: {
+      labels: sorted.map((s) => s[0]),
+      datasets: [{
+        data: sorted.map((s) => s[1]),
+        backgroundColor: CHART_COLORS.secondary + "cc",
+        borderRadius: 4,
+        barPercentage: 0.7,
+      }],
+    },
+    options: chartDefaults({
+      plugins: { ...chartDefaults().plugins, legend: { display: false } },
+      scales: {
+        ...chartDefaults().scales,
+        y: {
+          ...chartDefaults().scales.y,
+          ticks: { ...chartDefaults().scales.y.ticks, callback: (v) => fmtCompact(v) },
+        },
+      },
+    }),
+  });
+}
+
+function drawBreathIndexed(records) {
+  const byYearJurisdiction = {};
+  records.forEach((r) => {
+    const key = `${r.series_year}-${r.jurisdiction}`;
+    byYearJurisdiction[key] = (byYearJurisdiction[key] || 0) + r.count;
+  });
+
+  const years = [...new Set(records.map((r) => r.series_year))].sort();
+  const jurisdictions = [...new Set(records.map((r) => r.jurisdiction))].sort();
+  const canvas = document.getElementById("breath-indexed");
+  if (!canvas || years.length < 2) return;
+
+  const baseYear = years[0];
+
+  createChart(canvas, {
+    type: "line",
+    data: {
+      labels: years,
+      datasets: jurisdictions.map((j) => {
+        const base = byYearJurisdiction[`${baseYear}-${j}`] || 1;
+        return {
+          label: j,
+          data: years.map((y) => {
+            const val = byYearJurisdiction[`${y}-${j}`] || 0;
+            return ((val / base) * 100).toFixed(1);
+          }),
+          borderColor: JURISDICTION_COLORS[j] || CHART_COLORS.primary,
+          backgroundColor: "transparent",
+          tension: 0.3,
+          pointRadius: 0,
+          borderWidth: 2,
+        };
+      }),
+    },
+    options: chartDefaults({
+      scales: {
+        ...chartDefaults().scales,
+        y: {
+          ...chartDefaults().scales.y,
+          title: { display: true, text: "Index (first year = 100)", color: CHART_COLORS.text },
+        },
+      },
+    }),
+  });
+}
+
+/* ========== DRUG TESTS PAGE ========== */
+function renderDrugTestsPage() {
+  const summary = state.summaries["drug-tests"];
+  const records = state.records["drug-tests"];
+  if (!summary || !records) {
+    app.innerHTML = `<div class="loading">Loading drug test data…</div>`;
+    return;
+  }
+
+  const years = [...new Set(records.map((r) => r.series_year))].sort();
+  const jurisdictions = ["all", ...summary.dimensions.jurisdictions];
+  const stages = ["all", ...summary.dimensions.detection_methods];
+
+  const sections = [
+    { id: "trend", title: "Trend over time" },
+    { id: "substances", title: "Substance breakdown" },
+    { id: "stages", title: "Testing stages" },
+    { id: "jurisdictions", title: "By jurisdiction" },
+    { id: "composition", title: "Substance trends" },
+  ];
+
+  state.filters.yearStart = years[0];
+  state.filters.yearEnd = summary.latest_year;
+
+  const totalTests = summary.totals.total_positive_tests;
+  const latestTotal = summary.latest_year_totals.total_positive_tests;
+  const topJurisdiction = summary.aggregates.by_jurisdiction[0];
+
+  app.innerHTML = `
+    <div class="dataset-page">
+      <nav class="toc-sidebar">
+        <h4>Sections</h4>
+        ${sections.map((s) => `<a href="#${s.id}" class="toc-link" data-target="${s.id}">${s.title}</a>`).join("")}
+      </nav>
+      <div class="dataset-content">
+        <div class="dynamic-header" id="dynamic-header">
+          <h2><span class="stat-number">${fmt(totalTests)}</span> positive drug tests from 2008 to 2024</h2>
+          <p>${fmt(latestTotal)} positive detections in ${summary.latest_year} alone.</p>
+        </div>
+        <div class="filter-bar" id="filter-bar">
+          <div class="filter-group">
+            <label>From year</label>
+            <select id="drug-year-start">${years.map((y) => `<option value="${y}">${y}</option>`).join("")}</select>
+          </div>
+          <div class="filter-group">
+            <label>To year</label>
+            <select id="drug-year-end">${years.map((y) => `<option value="${y}" ${y === summary.latest_year ? "selected" : ""}>${y}</option>`).join("")}</select>
+          </div>
+          <div class="filter-group">
+            <label>Jurisdiction</label>
+            <select id="drug-jurisdiction">${jurisdictions.map((j) => `<option value="${j}">${j === "all" ? "All" : j}</option>`).join("")}</select>
+          </div>
+          <div class="filter-group">
+            <label>Testing stage</label>
+            <select id="drug-stage">${stages.map((s) => `<option value="${s}">${s === "all" ? "All" : s}</option>`).join("")}</select>
+          </div>
+        </div>
+        <div class="stat-row" id="stat-row"></div>
+        <div class="chart-section" id="trend">
+          <h3>Positive drug tests over time</h3>
+          <p class="chart-desc">Annual national trend by jurisdiction. Drug testing expanded significantly after 2010.</p>
+          <div class="chart-container"><canvas id="drug-trend"></canvas></div>
+        </div>
+        <div class="chart-section" id="substances">
+          <h3>Which substances are detected most</h3>
+          <p class="chart-desc">Substance detection counts across all jurisdictions. Cannabis consistently leads.</p>
+          <div class="chart-container"><canvas id="drug-substances"></canvas></div>
+        </div>
+        <div class="chart-section" id="stages">
+          <h3>Testing stage breakdown</h3>
+          <p class="chart-desc">Indicator (Stage 1) screening versus confirmatory tests by year.</p>
+          <div class="chart-container"><canvas id="drug-stages"></canvas></div>
+        </div>
+        <div class="chart-section" id="jurisdictions">
+          <h3>Jurisdiction comparison</h3>
+          <p class="chart-desc">Positive drug tests by jurisdiction in the selected period.</p>
+          <div class="chart-container"><canvas id="drug-jurisdictions"></canvas></div>
+        </div>
+        <div class="chart-section" id="composition">
+          <h3>Substance composition over time</h3>
+          <p class="chart-desc">How the mix of detected substances has shifted across the dataset period.</p>
+          <div class="chart-container"><canvas id="drug-composition"></canvas></div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.getElementById("drug-year-start").value = years[0];
+  document.getElementById("drug-year-end").value = summary.latest_year;
+
+  bindDrugFilters(records, summary);
+  updateDrugView(records, summary);
+}
+
+function bindDrugFilters(records, summary) {
+  const update = () => {
+    state.filters.yearStart = document.getElementById("drug-year-start").value;
+    state.filters.yearEnd = document.getElementById("drug-year-end").value;
+    state.filters.jurisdiction = document.getElementById("drug-jurisdiction").value;
+    state.filters.detectionStage = document.getElementById("drug-stage").value;
+    updateDrugView(records, summary);
+  };
+
+  ["drug-year-start", "drug-year-end", "drug-jurisdiction", "drug-stage"].forEach(
+    (id) => document.getElementById(id).addEventListener("change", update)
+  );
+}
+
+function updateDrugView(records, summary) {
+  const { yearStart, yearEnd, jurisdiction, detectionStage } = state.filters;
+
+  const filtered = records.filter((r) => {
+    const y = r.series_year;
+    if (yearStart && y < parseInt(yearStart)) return false;
+    if (yearEnd && y > parseInt(yearEnd)) return false;
+    if (jurisdiction !== "all" && r.jurisdiction !== jurisdiction) return false;
+    if (detectionStage && detectionStage !== "all" && r.detection_method !== detectionStage) return false;
+    return true;
+  });
+
+  updateDrugHeader(filtered, summary);
+  updateDrugStats(filtered, summary);
+  destroyCharts();
+  drawDrugTrend(filtered);
+  drawDrugSubstances(filtered);
+  drawDrugStages(filtered);
+  drawDrugJurisdictions(filtered);
+  drawDrugComposition(filtered);
+}
+
+function updateDrugHeader(records, summary) {
+  const total = records.reduce((s, r) => s + r.count, 0);
+  const years = [...new Set(records.map((r) => r.series_year))];
+  const yearRange = years.length ? `${Math.min(...years)}–${Math.max(...years)}` : "no data";
+
+  const header = document.getElementById("dynamic-header");
+  if (!header) return;
+
+  if (state.filters.jurisdiction !== "all") {
+    header.querySelector("h2").innerHTML = `<span class="stat-number">${fmtCompact(total)}</span> positive drug tests in ${state.filters.jurisdiction}`;
+    header.querySelector("p").textContent = `From ${yearRange}.`;
+  } else {
+    header.querySelector("h2").innerHTML = `<span class="stat-number">${fmtCompact(total)}</span> positive drug tests from ${yearRange}`;
+    header.querySelector("p").textContent = `Across all jurisdictions.`;
+  }
+}
+
+function updateDrugStats(records, summary) {
+  const total = records.reduce((s, r) => s + r.count, 0);
+  const jurisdictions = [...new Set(records.map((r) => r.jurisdiction))].length;
+  const years = [...new Set(records.map((r) => r.series_year))].length;
+  const byJurisdiction = {};
+  records.forEach((r) => { byJurisdiction[r.jurisdiction] = (byJurisdiction[r.jurisdiction] || 0) + r.count; });
+  const top = Object.entries(byJurisdiction).sort((a, b) => b[1] - a[1])[0];
+
+  const statRow = document.getElementById("stat-row");
+  if (!statRow) return;
+
+  statRow.innerHTML = `
+    <div class="stat-box">
+      <div class="stat-label">Total positives</div>
+      <div class="stat-value">${fmtCompact(total)}</div>
+      <div class="stat-sub">${years} years</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-label">Jurisdictions</div>
+      <div class="stat-value">${jurisdictions}</div>
+      <div class="stat-sub">States and territories</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-label">Highest</div>
+      <div class="stat-value">${top ? top[0] : "—"}</div>
+      <div class="stat-sub">${top ? fmtCompact(top[1]) : ""} total</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-label">Records</div>
+      <div class="stat-value">${fmt(records.length)}</div>
+      <div class="stat-sub">Annual data points</div>
+    </div>
+  `;
+}
+
+function drawDrugTrend(records) {
+  const byYearJurisdiction = {};
+  records.forEach((r) => {
+    const key = `${r.series_year}-${r.jurisdiction}`;
+    byYearJurisdiction[key] = (byYearJurisdiction[key] || 0) + r.count;
+  });
+
+  const years = [...new Set(records.map((r) => r.series_year))].sort();
+  const jurisdictions = [...new Set(records.map((r) => r.jurisdiction))].sort();
+  const canvas = document.getElementById("drug-trend");
+  if (!canvas) return;
+
+  createChart(canvas, {
+    type: "line",
+    data: {
+      labels: years,
+      datasets: jurisdictions.map((j) => ({
+        label: j,
+        data: years.map((y) => byYearJurisdiction[`${y}-${j}`] || 0),
+        borderColor: JURISDICTION_COLORS[j] || CHART_COLORS.primary,
+        backgroundColor: "transparent",
+        tension: 0.3,
+        pointRadius: 0,
+        borderWidth: 2,
+      })),
+    },
+    options: chartDefaults({
+      scales: {
+        ...chartDefaults().scales,
+        y: {
+          ...chartDefaults().scales.y,
+          ticks: { ...chartDefaults().scales.y.ticks, callback: (v) => fmtCompact(v) },
+        },
+      },
+    }),
+  });
+}
+
+function drawDrugSubstances(records) {
+  const byYear = {};
+  records.forEach((r) => {
+    if (!byYear[r.series_year]) {
+      byYear[r.series_year] = { cannabis: 0, amphetamine: 0, methylamphetamine: 0, ecstasy: 0, cocaine: 0, other: 0 };
+    }
+    if (r.cannabis_detected) byYear[r.series_year].cannabis++;
+    if (r.amphetamine_detected) byYear[r.series_year].amphetamine++;
+    if (r.methylamphetamine_detected) byYear[r.series_year].methylamphetamine++;
+    if (r.ecstasy_detected) byYear[r.series_year].ecstasy++;
+    if (r.cocaine_detected) byYear[r.series_year].cocaine++;
+    if (r.other_detected) byYear[r.series_year].other++;
+  });
+
+  const years = Object.keys(byYear).sort();
+  const substances = ["cannabis", "amphetamine", "methylamphetamine", "ecstasy", "cocaine", "other"];
+  const canvas = document.getElementById("drug-substances");
+  if (!canvas) return;
+
+  createChart(canvas, {
+    type: "bar",
+    data: {
+      labels: years,
+      datasets: substances.map((s) => ({
+        label: s.charAt(0).toUpperCase() + s.slice(1),
+        data: years.map((y) => byYear[y][s]),
+        backgroundColor: SUBSTANCE_COLORS[s] + "cc",
+        borderRadius: 2,
+      })),
+    },
+    options: chartDefaults({
+      scales: {
+        ...chartDefaults().scales,
+        x: { ...chartDefaults().scales.x, stacked: true },
+        y: {
+          ...chartDefaults().scales.y,
+          stacked: true,
+          ticks: { ...chartDefaults().scales.y.ticks, callback: (v) => fmtCompact(v) },
+        },
+      },
+    }),
+  });
+}
+
+function drawDrugStages(records) {
+  const byYearStage = {};
+  records.forEach((r) => {
+    const key = `${r.series_year}-${r.detection_method}`;
+    byYearStage[key] = (byYearStage[key] || 0) + r.count;
+  });
+
+  const years = [...new Set(records.map((r) => r.series_year))].sort();
+  const stages = [...new Set(records.map((r) => r.detection_method))];
+  const canvas = document.getElementById("drug-stages");
+  if (!canvas) return;
+
+  createChart(canvas, {
+    type: "bar",
+    data: {
+      labels: years,
+      datasets: stages.map((s) => ({
+        label: s,
+        data: years.map((y) => byYearStage[`${y}-${s}`] || 0),
+        backgroundColor: s.includes("Stage 1") ? CHART_COLORS.primary + "cc" : CHART_COLORS.accent + "cc",
+        borderRadius: 2,
+      })),
+    },
+    options: chartDefaults({
+      scales: {
+        ...chartDefaults().scales,
+        x: { ...chartDefaults().scales.x, stacked: true },
+        y: {
+          ...chartDefaults().scales.y,
+          stacked: true,
+          ticks: { ...chartDefaults().scales.y.ticks, callback: (v) => fmtCompact(v) },
+        },
+      },
+    }),
+  });
+}
+
+function drawDrugJurisdictions(records) {
+  const byJurisdiction = {};
+  records.forEach((r) => { byJurisdiction[r.jurisdiction] = (byJurisdiction[r.jurisdiction] || 0) + r.count; });
+
+  const sorted = Object.entries(byJurisdiction).sort((a, b) => b[1] - a[1]);
+  const canvas = document.getElementById("drug-jurisdictions");
+  if (!canvas) return;
+
+  createChart(canvas, {
+    type: "bar",
+    data: {
+      labels: sorted.map((s) => s[0]),
+      datasets: [{
+        data: sorted.map((s) => s[1]),
+        backgroundColor: sorted.map((s) => JURISDICTION_COLORS[s[0]] || CHART_COLORS.accent),
+        borderRadius: 4,
+        barPercentage: 0.7,
+      }],
+    },
+    options: chartDefaults({
+      indexAxis: "y",
+      plugins: { ...chartDefaults().plugins, legend: { display: false } },
+      scales: {
+        ...chartDefaults().scales,
+        x: {
+          ...chartDefaults().scales.x,
+          ticks: { ...chartDefaults().scales.x.ticks, callback: (v) => fmtCompact(v) },
+        },
+      },
+    }),
+  });
+}
+
+function drawDrugComposition(records) {
+  const byYear = {};
+  records.forEach((r) => {
+    if (!byYear[r.series_year]) {
+      byYear[r.series_year] = { cannabis: 0, amphetamine: 0, methylamphetamine: 0, ecstasy: 0, cocaine: 0 };
+    }
+    if (r.cannabis_detected) byYear[r.series_year].cannabis++;
+    if (r.amphetamine_detected) byYear[r.series_year].amphetamine++;
+    if (r.methylamphetamine_detected) byYear[r.series_year].methylamphetamine++;
+    if (r.ecstasy_detected) byYear[r.series_year].ecstasy++;
+    if (r.cocaine_detected) byYear[r.series_year].cocaine++;
+  });
+
+  const years = Object.keys(byYear).sort();
+  const substances = ["cannabis", "amphetamine", "methylamphetamine", "ecstasy", "cocaine"];
+  const canvas = document.getElementById("drug-composition");
+  if (!canvas) return;
+
+  createChart(canvas, {
+    type: "line",
+    data: {
+      labels: years,
+      datasets: substances.map((s) => ({
+        label: s.charAt(0).toUpperCase() + s.slice(1),
+        data: years.map((y) => byYear[y][s]),
+        borderColor: SUBSTANCE_COLORS[s],
+        backgroundColor: "transparent",
+        tension: 0.3,
+        pointRadius: 0,
+        borderWidth: 2,
+      })),
+    },
+    options: chartDefaults({
+      scales: {
+        ...chartDefaults().scales,
+        y: {
+          ...chartDefaults().scales.y,
+          ticks: { ...chartDefaults().scales.y.ticks, callback: (v) => fmtCompact(v) },
+        },
+      },
+    }),
+  });
+}
+
+/* ========== ABOUT PAGE ========== */
+function renderAboutPage() {
+  app.innerHTML = `
+    <div class="about-section">
+      <h2>About this project</h2>
+      <p>This site visualises Australian road safety enforcement data published by the Bureau of Infrastructure and Transport Research Economics (BITRE). The data covers fines, breath tests, and drug tests across all states and territories from 2008 to 2024.</p>
+    </div>
+    <div class="about-section">
+      <h2>Data sources</h2>
+      <p>All data comes from BITRE's road safety enforcement statistics, published through the National Road Safety Data Hub. Three datasets are used:</p>
+      <ul>
+        <li><strong>Police enforcement fines</strong> — Monthly records of speeding, mobile phone use, seatbelt non-compliance, and unlicensed driving offences. Covers 2008–2024 with 12,179 cleaned records.</li>
+        <li><strong>Positive breath tests</strong> — Annual counts of positive random breath test results by jurisdiction, location, and age group. Covers 2008–2024.</li>
+        <li><strong>Positive drug tests</strong> — Annual counts of positive roadside drug tests with substance-level detection data (cannabis, amphetamine, cocaine, ecstasy, methylamphetamine). Covers 2008–2024.</li>
+      </ul>
+    </div>
+    <div class="about-section">
+      <h2>Methodology</h2>
+      <p>Raw Excel files are cleaned through a published pipeline that converts Excel date serials to ISO calendar dates, normalises text values, and preserves zero values as observed data. The cleaned JSON and CSV files are available for download alongside each dataset.</p>
+      <p>All historical comparisons use annual aggregation. Pre-2023 fines data was reported annually, while post-2023 data has monthly granularity. For consistency, all trend visualisations aggregate to the annual level.</p>
+    </div>
+    <div class="about-section">
+      <h2>Data limitations</h2>
+      <div class="note">
+        <p><strong>Reporting change in 2023:</strong> Fines data shifted from annual to monthly reporting. This creates an apparent discontinuity in the time series that reflects reporting scope, not necessarily a change in enforcement behaviour.</p>
+      </div>
+      <ul>
+        <li>Cross-jurisdiction comparisons should be read as indicative. State and territory definitions and reporting systems are not fully harmonised.</li>
+        <li>Drug test substance detection uses indicator-based screening (Stage 1), not confirmatory laboratory analysis. Positive results at Stage 1 may not always be confirmed.</li>
+        <li>Zero values are retained as observed values rather than treated as missing data.</li>
+        <li>Camera-led and police-issued enforcement should not be read as identical forms of enforcement, even when they produce the same legal outcome.</li>
+        <li>The breath test dataset records positive tests only, not total tests conducted. Positivity rates cannot be calculated without the denominator of total tests.</li>
+      </ul>
+    </div>
+    <div class="about-section">
+      <h2>Colour palette</h2>
+      <p>Jurisdictions are colour-coded consistently across all charts:</p>
+      <div class="stat-row">
+        ${Object.entries(JURISDICTION_COLORS)
+          .map(
+            ([j, c]) => `
+          <div class="stat-box" style="border-left: 3px solid ${c}">
+            <div class="stat-value" style="font-size:18px;color:${c}">${j}</div>
+          </div>
+        `
+          )
+          .join("")}
+      </div>
+    </div>
+  `;
+}
+
+init();
