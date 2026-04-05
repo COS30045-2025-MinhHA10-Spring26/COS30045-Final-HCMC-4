@@ -1,2 +1,6 @@
 __pycache__/
 *.pyc
+.agents/
+.ipynb_checkpoints/
+skills-lock.json
+power_data.txt
