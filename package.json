@@ -1,0 +1,23 @@
+{
+  "name": "cos30045-final-hcmc-4",
+  "version": "1.0.0",
+  "description": "A public-interest data exploration site built on Australian road safety enforcement data published by BITRE and the National Road Safety Data Hub.",
+  "main": "script.js",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/COS30045-2025-MinhHA10-Spring26/COS30045-Final-HCMC-4.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/COS30045-2025-MinhHA10-Spring26/COS30045-Final-HCMC-4/issues"
+  },
+  "homepage": "https://github.com/COS30045-2025-MinhHA10-Spring26/COS30045-Final-HCMC-4#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.59.1",
+    "@types/node": "^25.5.2"
+  }
+}
