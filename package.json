@@ -3,7 +3,12 @@
   "version": "1.0.0",
   "description": "A public-interest data exploration site built on Australian road safety enforcement data published by BITRE and the National Road Safety Data Hub.",
   "main": "script.js",
-  "scripts": {},
+  "scripts": {
+    "test": "playwright test",
+    "test:ui": "playwright test --ui",
+    "test:debug": "playwright test --debug",
+    "serve": "python3 serve.py"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/COS30045-2025-MinhHA10-Spring26/COS30045-Final-HCMC-4.git"
