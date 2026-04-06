@@ -1,0 +1,1193 @@
+{
+  "dataset_key": "police-enforcement-positive-drug-tests",
+  "title": "Positive drug tests",
+  "description": "Cleaned annual police positive roadside drug test records published by BITRE and the National Road Safety Data Hub.",
+  "source": {
+    "name": "Bureau of Infrastructure and Transport Research Economics (BITRE)",
+    "publication_url": "https://www.bitre.gov.au/publications/2024/road-safety-enforcement-data",
+    "dataset_url": "https://datahub.roadsafety.gov.au/safe-systems/safe-road-use/police-enforcement",
+    "source_file": "police_enforcement_2024_positive_drug_tests.xlsx"
+  },
+  "schema_version": 1,
+  "generated_at": "2026-04-05T14:56:51Z",
+  "record_count": 7982,
+  "latest_year": 2024,
+  "period_coverage": {
+    "start": "2008-01-01",
+    "end": "2024-12-31",
+    "count": 39
+  },
+  "totals": {
+    "total_positive_tests": 579458,
+    "total_fines": 35313,
+    "total_arrests": 960,
+    "total_charges": 94202,
+    "total_actions": 709933
+  },
+  "latest_year_totals": {
+    "total_positive_tests": 89254,
+    "total_fines": 18481,
+    "total_arrests": 723,
+    "total_charges": 47252,
+    "total_actions": 155710
+  },
+  "dimensions": {
+    "jurisdictions": [
+      "ACT",
+      "NSW",
+      "NT",
+      "QLD",
+      "SA",
+      "TAS",
+      "VIC",
+      "WA"
+    ],
+    "locations": [
+      "All regions",
+      "Inner Regional Australia",
+      "Major Cities of Australia",
+      "Outer Regional Australia",
+      "Remote Australia",
+      "Unknown",
+      "Very Remote Australia"
+    ],
+    "age_groups": [
+      "0-16",
+      "17-25",
+      "26-39",
+      "40-64",
+      "65 and over",
+      "All ages",
+      "Unknown"
+    ],
+    "detection_methods": [
+      "Indicator (Stage 1)",
+      "Laboratory or Toxicology (Stage 3)",
+      "Not applicable",
+      "Secondary Confirmatory (Stage 2)"
+    ]
+  },
+  "quality": {
+    "rows_seen": 7982,
+    "rows_emitted": 7982,
+    "rows_skipped": 0,
+    "missing_required_values": {}
+  },
+  "aggregates": {
+    "timeseries": [
+      {
+        "year": 2008,
+        "positive_tests": 2413,
+        "fines": 0,
+        "arrests": 0,
+        "charges": 0,
+        "total_actions": 2413
+      },
+      {
+        "year": 2009,
+        "positive_tests": 2910,
+        "fines": 0,
+        "arrests": 0,
+        "charges": 0,
+        "total_actions": 2910
+      },
+      {
+        "year": 2010,
+        "positive_tests": 4033,
+        "fines": 0,
+        "arrests": 0,
+        "charges": 0,
+        "total_actions": 4033
+      },
+      {
+        "year": 2011,
+        "positive_tests": 5604,
+        "fines": 0,
+        "arrests": 0,
+        "charges": 0,
+        "total_actions": 5604
+      },
+      {
+        "year": 2012,
+        "positive_tests": 8242,
+        "fines": 0,
+        "arrests": 0,
+        "charges": 0,
+        "total_actions": 8242
+      },
+      {
+        "year": 2013,
+        "positive_tests": 9853,
+        "fines": 0,
+        "arrests": 0,
+        "charges": 0,
+        "total_actions": 9853
+      },
+      {
+        "year": 2014,
+        "positive_tests": 16289,
+        "fines": 0,
+        "arrests": 0,
+        "charges": 0,
+        "total_actions": 16289
+      },
+      {
+        "year": 2015,
+        "positive_tests": 35143,
+        "fines": 0,
+        "arrests": 0,
+        "charges": 0,
+        "total_actions": 35143
+      },
+      {
+        "year": 2016,
+        "positive_tests": 38703,
+        "fines": 0,
+        "arrests": 0,
+        "charges": 0,
+        "total_actions": 38703
+      },
+      {
+        "year": 2017,
+        "positive_tests": 39855,
+        "fines": 0,
+        "arrests": 0,
+        "charges": 0,
+        "total_actions": 39855
+      },
+      {
+        "year": 2018,
+        "positive_tests": 48216,
+        "fines": 0,
+        "arrests": 0,
+        "charges": 0,
+        "total_actions": 48216
+      },
+      {
+        "year": 2019,
+        "positive_tests": 48466,
+        "fines": 0,
+        "arrests": 0,
+        "charges": 0,
+        "total_actions": 48466
+      },
+      {
+        "year": 2020,
+        "positive_tests": 46905,
+        "fines": 0,
+        "arrests": 0,
+        "charges": 0,
+        "total_actions": 46905
+      },
+      {
+        "year": 2021,
+        "positive_tests": 49465,
+        "fines": 0,
+        "arrests": 0,
+        "charges": 0,
+        "total_actions": 49465
+      },
+      {
+        "year": 2022,
+        "positive_tests": 46868,
+        "fines": 0,
+        "arrests": 0,
+        "charges": 0,
+        "total_actions": 46868
+      },
+      {
+        "year": 2023,
+        "positive_tests": 87239,
+        "fines": 16832,
+        "arrests": 237,
+        "charges": 46950,
+        "total_actions": 151258
+      },
+      {
+        "year": 2024,
+        "positive_tests": 89254,
+        "fines": 18481,
+        "arrests": 723,
+        "charges": 47252,
+        "total_actions": 155710
+      }
+    ],
+    "by_jurisdiction": [
+      {
+        "jurisdiction": "NSW",
+        "positive_tests": 38774,
+        "fines": 14600,
+        "arrests": 0,
+        "charges": 24174,
+        "total_actions": 77548
+      },
+      {
+        "jurisdiction": "WA",
+        "positive_tests": 21714,
+        "fines": 0,
+        "arrests": 9,
+        "charges": 6709,
+        "total_actions": 28432
+      },
+      {
+        "jurisdiction": "QLD",
+        "positive_tests": 12063,
+        "fines": 0,
+        "arrests": 34,
+        "charges": 12063,
+        "total_actions": 24160
+      },
+      {
+        "jurisdiction": "SA",
+        "positive_tests": 5333,
+        "fines": 3101,
+        "arrests": 120,
+        "charges": 1879,
+        "total_actions": 10433
+      },
+      {
+        "jurisdiction": "NT",
+        "positive_tests": 2980,
+        "fines": 780,
+        "arrests": 524,
+        "charges": 2200,
+        "total_actions": 6484
+      },
+      {
+        "jurisdiction": "VIC",
+        "positive_tests": 5376,
+        "fines": 0,
+        "arrests": 0,
+        "charges": 0,
+        "total_actions": 5376
+      },
+      {
+        "jurisdiction": "TAS",
+        "positive_tests": 2787,
+        "fines": 0,
+        "arrests": 0,
+        "charges": 0,
+        "total_actions": 2787
+      },
+      {
+        "jurisdiction": "ACT",
+        "positive_tests": 227,
+        "fines": 0,
+        "arrests": 36,
+        "charges": 227,
+        "total_actions": 490
+      }
+    ],
+    "by_jurisdiction_timeseries": [
+      {
+        "year": 2008,
+        "jurisdiction": "NSW",
+        "positive_tests": 542
+      },
+      {
+        "year": 2008,
+        "jurisdiction": "QLD",
+        "positive_tests": 216
+      },
+      {
+        "year": 2008,
+        "jurisdiction": "SA",
+        "positive_tests": 600
+      },
+      {
+        "year": 2008,
+        "jurisdiction": "TAS",
+        "positive_tests": 211
+      },
+      {
+        "year": 2008,
+        "jurisdiction": "VIC",
+        "positive_tests": 438
+      },
+      {
+        "year": 2008,
+        "jurisdiction": "WA",
+        "positive_tests": 406
+      },
+      {
+        "year": 2009,
+        "jurisdiction": "NSW",
+        "positive_tests": 613
+      },
+      {
+        "year": 2009,
+        "jurisdiction": "QLD",
+        "positive_tests": 254
+      },
+      {
+        "year": 2009,
+        "jurisdiction": "SA",
+        "positive_tests": 1179
+      },
+      {
+        "year": 2009,
+        "jurisdiction": "TAS",
+        "positive_tests": 252
+      },
+      {
+        "year": 2009,
+        "jurisdiction": "VIC",
+        "positive_tests": 323
+      },
+      {
+        "year": 2009,
+        "jurisdiction": "WA",
+        "positive_tests": 289
+      },
+      {
+        "year": 2010,
+        "jurisdiction": "NSW",
+        "positive_tests": 735
+      },
+      {
+        "year": 2010,
+        "jurisdiction": "QLD",
+        "positive_tests": 440
+      },
+      {
+        "year": 2010,
+        "jurisdiction": "SA",
+        "positive_tests": 1699
+      },
+      {
+        "year": 2010,
+        "jurisdiction": "VIC",
+        "positive_tests": 741
+      },
+      {
+        "year": 2010,
+        "jurisdiction": "WA",
+        "positive_tests": 418
+      },
+      {
+        "year": 2011,
+        "jurisdiction": "NSW",
+        "positive_tests": 666
+      },
+      {
+        "year": 2011,
+        "jurisdiction": "QLD",
+        "positive_tests": 825
+      },
+      {
+        "year": 2011,
+        "jurisdiction": "SA",
+        "positive_tests": 2320
+      },
+      {
+        "year": 2011,
+        "jurisdiction": "TAS",
+        "positive_tests": 573
+      },
+      {
+        "year": 2011,
+        "jurisdiction": "VIC",
+        "positive_tests": 760
+      },
+      {
+        "year": 2011,
+        "jurisdiction": "WA",
+        "positive_tests": 460
+      },
+      {
+        "year": 2012,
+        "jurisdiction": "ACT",
+        "positive_tests": 37
+      },
+      {
+        "year": 2012,
+        "jurisdiction": "NSW",
+        "positive_tests": 705
+      },
+      {
+        "year": 2012,
+        "jurisdiction": "QLD",
+        "positive_tests": 937
+      },
+      {
+        "year": 2012,
+        "jurisdiction": "SA",
+        "positive_tests": 3237
+      },
+      {
+        "year": 2012,
+        "jurisdiction": "TAS",
+        "positive_tests": 523
+      },
+      {
+        "year": 2012,
+        "jurisdiction": "VIC",
+        "positive_tests": 2180
+      },
+      {
+        "year": 2012,
+        "jurisdiction": "WA",
+        "positive_tests": 623
+      },
+      {
+        "year": 2013,
+        "jurisdiction": "ACT",
+        "positive_tests": 116
+      },
+      {
+        "year": 2013,
+        "jurisdiction": "NSW",
+        "positive_tests": 898
+      },
+      {
+        "year": 2013,
+        "jurisdiction": "NT",
+        "positive_tests": 84
+      },
+      {
+        "year": 2013,
+        "jurisdiction": "QLD",
+        "positive_tests": 1300
+      },
+      {
+        "year": 2013,
+        "jurisdiction": "SA",
+        "positive_tests": 3737
+      },
+      {
+        "year": 2013,
+        "jurisdiction": "TAS",
+        "positive_tests": 639
+      },
+      {
+        "year": 2013,
+        "jurisdiction": "VIC",
+        "positive_tests": 2540
+      },
+      {
+        "year": 2013,
+        "jurisdiction": "WA",
+        "positive_tests": 539
+      },
+      {
+        "year": 2014,
+        "jurisdiction": "ACT",
+        "positive_tests": 392
+      },
+      {
+        "year": 2014,
+        "jurisdiction": "NSW",
+        "positive_tests": 2096
+      },
+      {
+        "year": 2014,
+        "jurisdiction": "NT",
+        "positive_tests": 90
+      },
+      {
+        "year": 2014,
+        "jurisdiction": "QLD",
+        "positive_tests": 2208
+      },
+      {
+        "year": 2014,
+        "jurisdiction": "SA",
+        "positive_tests": 4681
+      },
+      {
+        "year": 2014,
+        "jurisdiction": "TAS",
+        "positive_tests": 1969
+      },
+      {
+        "year": 2014,
+        "jurisdiction": "VIC",
+        "positive_tests": 3749
+      },
+      {
+        "year": 2014,
+        "jurisdiction": "WA",
+        "positive_tests": 1104
+      },
+      {
+        "year": 2015,
+        "jurisdiction": "ACT",
+        "positive_tests": 258
+      },
+      {
+        "year": 2015,
+        "jurisdiction": "NSW",
+        "positive_tests": 9123
+      },
+      {
+        "year": 2015,
+        "jurisdiction": "NT",
+        "positive_tests": 120
+      },
+      {
+        "year": 2015,
+        "jurisdiction": "QLD",
+        "positive_tests": 7446
+      },
+      {
+        "year": 2015,
+        "jurisdiction": "SA",
+        "positive_tests": 5239
+      },
+      {
+        "year": 2015,
+        "jurisdiction": "TAS",
+        "positive_tests": 2318
+      },
+      {
+        "year": 2015,
+        "jurisdiction": "VIC",
+        "positive_tests": 7823
+      },
+      {
+        "year": 2015,
+        "jurisdiction": "WA",
+        "positive_tests": 2816
+      },
+      {
+        "year": 2016,
+        "jurisdiction": "ACT",
+        "positive_tests": 444
+      },
+      {
+        "year": 2016,
+        "jurisdiction": "NSW",
+        "positive_tests": 8220
+      },
+      {
+        "year": 2016,
+        "jurisdiction": "NT",
+        "positive_tests": 196
+      },
+      {
+        "year": 2016,
+        "jurisdiction": "QLD",
+        "positive_tests": 10663
+      },
+      {
+        "year": 2016,
+        "jurisdiction": "SA",
+        "positive_tests": 4310
+      },
+      {
+        "year": 2016,
+        "jurisdiction": "TAS",
+        "positive_tests": 2154
+      },
+      {
+        "year": 2016,
+        "jurisdiction": "VIC",
+        "positive_tests": 9065
+      },
+      {
+        "year": 2016,
+        "jurisdiction": "WA",
+        "positive_tests": 3651
+      },
+      {
+        "year": 2017,
+        "jurisdiction": "ACT",
+        "positive_tests": 504
+      },
+      {
+        "year": 2017,
+        "jurisdiction": "NSW",
+        "positive_tests": 9273
+      },
+      {
+        "year": 2017,
+        "jurisdiction": "NT",
+        "positive_tests": 329
+      },
+      {
+        "year": 2017,
+        "jurisdiction": "QLD",
+        "positive_tests": 11697
+      },
+      {
+        "year": 2017,
+        "jurisdiction": "SA",
+        "positive_tests": 4337
+      },
+      {
+        "year": 2017,
+        "jurisdiction": "TAS",
+        "positive_tests": 2152
+      },
+      {
+        "year": 2017,
+        "jurisdiction": "VIC",
+        "positive_tests": 8252
+      },
+      {
+        "year": 2017,
+        "jurisdiction": "WA",
+        "positive_tests": 3311
+      },
+      {
+        "year": 2018,
+        "jurisdiction": "ACT",
+        "positive_tests": 877
+      },
+      {
+        "year": 2018,
+        "jurisdiction": "NSW",
+        "positive_tests": 9067
+      },
+      {
+        "year": 2018,
+        "jurisdiction": "NT",
+        "positive_tests": 341
+      },
+      {
+        "year": 2018,
+        "jurisdiction": "QLD",
+        "positive_tests": 14020
+      },
+      {
+        "year": 2018,
+        "jurisdiction": "SA",
+        "positive_tests": 5141
+      },
+      {
+        "year": 2018,
+        "jurisdiction": "TAS",
+        "positive_tests": 2408
+      },
+      {
+        "year": 2018,
+        "jurisdiction": "VIC",
+        "positive_tests": 11548
+      },
+      {
+        "year": 2018,
+        "jurisdiction": "WA",
+        "positive_tests": 4814
+      },
+      {
+        "year": 2019,
+        "jurisdiction": "ACT",
+        "positive_tests": 852
+      },
+      {
+        "year": 2019,
+        "jurisdiction": "NSW",
+        "positive_tests": 9446
+      },
+      {
+        "year": 2019,
+        "jurisdiction": "NT",
+        "positive_tests": 462
+      },
+      {
+        "year": 2019,
+        "jurisdiction": "QLD",
+        "positive_tests": 13366
+      },
+      {
+        "year": 2019,
+        "jurisdiction": "SA",
+        "positive_tests": 4985
+      },
+      {
+        "year": 2019,
+        "jurisdiction": "TAS",
+        "positive_tests": 2487
+      },
+      {
+        "year": 2019,
+        "jurisdiction": "VIC",
+        "positive_tests": 11693
+      },
+      {
+        "year": 2019,
+        "jurisdiction": "WA",
+        "positive_tests": 5175
+      },
+      {
+        "year": 2020,
+        "jurisdiction": "ACT",
+        "positive_tests": 834
+      },
+      {
+        "year": 2020,
+        "jurisdiction": "NSW",
+        "positive_tests": 12652
+      },
+      {
+        "year": 2020,
+        "jurisdiction": "NT",
+        "positive_tests": 372
+      },
+      {
+        "year": 2020,
+        "jurisdiction": "QLD",
+        "positive_tests": 8871
+      },
+      {
+        "year": 2020,
+        "jurisdiction": "SA",
+        "positive_tests": 5728
+      },
+      {
+        "year": 2020,
+        "jurisdiction": "TAS",
+        "positive_tests": 3273
+      },
+      {
+        "year": 2020,
+        "jurisdiction": "VIC",
+        "positive_tests": 10256
+      },
+      {
+        "year": 2020,
+        "jurisdiction": "WA",
+        "positive_tests": 4919
+      },
+      {
+        "year": 2021,
+        "jurisdiction": "ACT",
+        "positive_tests": 461
+      },
+      {
+        "year": 2021,
+        "jurisdiction": "NSW",
+        "positive_tests": 16997
+      },
+      {
+        "year": 2021,
+        "jurisdiction": "NT",
+        "positive_tests": 273
+      },
+      {
+        "year": 2021,
+        "jurisdiction": "QLD",
+        "positive_tests": 9847
+      },
+      {
+        "year": 2021,
+        "jurisdiction": "SA",
+        "positive_tests": 4226
+      },
+      {
+        "year": 2021,
+        "jurisdiction": "TAS",
+        "positive_tests": 2618
+      },
+      {
+        "year": 2021,
+        "jurisdiction": "VIC",
+        "positive_tests": 9717
+      },
+      {
+        "year": 2021,
+        "jurisdiction": "WA",
+        "positive_tests": 5326
+      },
+      {
+        "year": 2022,
+        "jurisdiction": "ACT",
+        "positive_tests": 390
+      },
+      {
+        "year": 2022,
+        "jurisdiction": "NSW",
+        "positive_tests": 9527
+      },
+      {
+        "year": 2022,
+        "jurisdiction": "NT",
+        "positive_tests": 181
+      },
+      {
+        "year": 2022,
+        "jurisdiction": "QLD",
+        "positive_tests": 12064
+      },
+      {
+        "year": 2022,
+        "jurisdiction": "SA",
+        "positive_tests": 5607
+      },
+      {
+        "year": 2022,
+        "jurisdiction": "TAS",
+        "positive_tests": 2209
+      },
+      {
+        "year": 2022,
+        "jurisdiction": "VIC",
+        "positive_tests": 10628
+      },
+      {
+        "year": 2022,
+        "jurisdiction": "WA",
+        "positive_tests": 6262
+      },
+      {
+        "year": 2023,
+        "jurisdiction": "ACT",
+        "positive_tests": 203
+      },
+      {
+        "year": 2023,
+        "jurisdiction": "NSW",
+        "positive_tests": 40551
+      },
+      {
+        "year": 2023,
+        "jurisdiction": "NT",
+        "positive_tests": 573
+      },
+      {
+        "year": 2023,
+        "jurisdiction": "QLD",
+        "positive_tests": 11853
+      },
+      {
+        "year": 2023,
+        "jurisdiction": "SA",
+        "positive_tests": 5329
+      },
+      {
+        "year": 2023,
+        "jurisdiction": "TAS",
+        "positive_tests": 2223
+      },
+      {
+        "year": 2023,
+        "jurisdiction": "VIC",
+        "positive_tests": 8813
+      },
+      {
+        "year": 2023,
+        "jurisdiction": "WA",
+        "positive_tests": 17694
+      },
+      {
+        "year": 2024,
+        "jurisdiction": "ACT",
+        "positive_tests": 227
+      },
+      {
+        "year": 2024,
+        "jurisdiction": "NSW",
+        "positive_tests": 38774
+      },
+      {
+        "year": 2024,
+        "jurisdiction": "NT",
+        "positive_tests": 2980
+      },
+      {
+        "year": 2024,
+        "jurisdiction": "QLD",
+        "positive_tests": 12063
+      },
+      {
+        "year": 2024,
+        "jurisdiction": "SA",
+        "positive_tests": 5333
+      },
+      {
+        "year": 2024,
+        "jurisdiction": "TAS",
+        "positive_tests": 2787
+      },
+      {
+        "year": 2024,
+        "jurisdiction": "VIC",
+        "positive_tests": 5376
+      },
+      {
+        "year": 2024,
+        "jurisdiction": "WA",
+        "positive_tests": 21714
+      }
+    ],
+    "substance_trends": [
+      {
+        "year": 2008,
+        "cannabis": 0,
+        "amphetamine": 0,
+        "cocaine": 0,
+        "ecstasy": 0,
+        "methylamphetamine": 0,
+        "other": 0
+      },
+      {
+        "year": 2009,
+        "cannabis": 0,
+        "amphetamine": 0,
+        "cocaine": 0,
+        "ecstasy": 0,
+        "methylamphetamine": 0,
+        "other": 0
+      },
+      {
+        "year": 2010,
+        "cannabis": 0,
+        "amphetamine": 0,
+        "cocaine": 0,
+        "ecstasy": 0,
+        "methylamphetamine": 0,
+        "other": 0
+      },
+      {
+        "year": 2011,
+        "cannabis": 0,
+        "amphetamine": 0,
+        "cocaine": 0,
+        "ecstasy": 0,
+        "methylamphetamine": 0,
+        "other": 0
+      },
+      {
+        "year": 2012,
+        "cannabis": 0,
+        "amphetamine": 0,
+        "cocaine": 0,
+        "ecstasy": 0,
+        "methylamphetamine": 0,
+        "other": 0
+      },
+      {
+        "year": 2013,
+        "cannabis": 0,
+        "amphetamine": 0,
+        "cocaine": 0,
+        "ecstasy": 0,
+        "methylamphetamine": 0,
+        "other": 0
+      },
+      {
+        "year": 2014,
+        "cannabis": 0,
+        "amphetamine": 0,
+        "cocaine": 0,
+        "ecstasy": 0,
+        "methylamphetamine": 0,
+        "other": 0
+      },
+      {
+        "year": 2015,
+        "cannabis": 0,
+        "amphetamine": 0,
+        "cocaine": 0,
+        "ecstasy": 0,
+        "methylamphetamine": 0,
+        "other": 0
+      },
+      {
+        "year": 2016,
+        "cannabis": 0,
+        "amphetamine": 0,
+        "cocaine": 0,
+        "ecstasy": 0,
+        "methylamphetamine": 0,
+        "other": 0
+      },
+      {
+        "year": 2017,
+        "cannabis": 0,
+        "amphetamine": 0,
+        "cocaine": 0,
+        "ecstasy": 0,
+        "methylamphetamine": 0,
+        "other": 0
+      },
+      {
+        "year": 2018,
+        "cannabis": 0,
+        "amphetamine": 0,
+        "cocaine": 0,
+        "ecstasy": 0,
+        "methylamphetamine": 0,
+        "other": 0
+      },
+      {
+        "year": 2019,
+        "cannabis": 0,
+        "amphetamine": 0,
+        "cocaine": 0,
+        "ecstasy": 0,
+        "methylamphetamine": 0,
+        "other": 0
+      },
+      {
+        "year": 2020,
+        "cannabis": 0,
+        "amphetamine": 0,
+        "cocaine": 0,
+        "ecstasy": 0,
+        "methylamphetamine": 0,
+        "other": 0
+      },
+      {
+        "year": 2021,
+        "cannabis": 0,
+        "amphetamine": 0,
+        "cocaine": 0,
+        "ecstasy": 0,
+        "methylamphetamine": 0,
+        "other": 0
+      },
+      {
+        "year": 2022,
+        "cannabis": 0,
+        "amphetamine": 0,
+        "cocaine": 0,
+        "ecstasy": 0,
+        "methylamphetamine": 0,
+        "other": 0
+      },
+      {
+        "year": 2023,
+        "cannabis": 1953,
+        "amphetamine": 1839,
+        "cocaine": 943,
+        "ecstasy": 495,
+        "methylamphetamine": 24,
+        "other": 8
+      },
+      {
+        "year": 2024,
+        "cannabis": 1953,
+        "amphetamine": 1669,
+        "cocaine": 999,
+        "ecstasy": 883,
+        "methylamphetamine": 288,
+        "other": 4
+      }
+    ],
+    "by_detection_stage": [
+      {
+        "year": 2008,
+        "detection_method": "Indicator (Stage 1)",
+        "positive_tests": 2413
+      },
+      {
+        "year": 2009,
+        "detection_method": "Indicator (Stage 1)",
+        "positive_tests": 2910
+      },
+      {
+        "year": 2010,
+        "detection_method": "Indicator (Stage 1)",
+        "positive_tests": 4033
+      },
+      {
+        "year": 2011,
+        "detection_method": "Indicator (Stage 1)",
+        "positive_tests": 5604
+      },
+      {
+        "year": 2012,
+        "detection_method": "Indicator (Stage 1)",
+        "positive_tests": 8242
+      },
+      {
+        "year": 2013,
+        "detection_method": "Indicator (Stage 1)",
+        "positive_tests": 9853
+      },
+      {
+        "year": 2014,
+        "detection_method": "Indicator (Stage 1)",
+        "positive_tests": 16289
+      },
+      {
+        "year": 2015,
+        "detection_method": "Indicator (Stage 1)",
+        "positive_tests": 35143
+      },
+      {
+        "year": 2016,
+        "detection_method": "Indicator (Stage 1)",
+        "positive_tests": 38703
+      },
+      {
+        "year": 2017,
+        "detection_method": "Indicator (Stage 1)",
+        "positive_tests": 39855
+      },
+      {
+        "year": 2018,
+        "detection_method": "Indicator (Stage 1)",
+        "positive_tests": 48216
+      },
+      {
+        "year": 2019,
+        "detection_method": "Indicator (Stage 1)",
+        "positive_tests": 48466
+      },
+      {
+        "year": 2020,
+        "detection_method": "Indicator (Stage 1)",
+        "positive_tests": 46905
+      },
+      {
+        "year": 2021,
+        "detection_method": "Indicator (Stage 1)",
+        "positive_tests": 49465
+      },
+      {
+        "year": 2022,
+        "detection_method": "Indicator (Stage 1)",
+        "positive_tests": 46868
+      },
+      {
+        "year": 2023,
+        "detection_method": "Indicator (Stage 1)",
+        "positive_tests": 43016
+      },
+      {
+        "year": 2023,
+        "detection_method": "Laboratory or Toxicology (Stage 3)",
+        "positive_tests": 24671
+      },
+      {
+        "year": 2023,
+        "detection_method": "Not applicable",
+        "positive_tests": 0
+      },
+      {
+        "year": 2023,
+        "detection_method": "Secondary Confirmatory (Stage 2)",
+        "positive_tests": 19552
+      },
+      {
+        "year": 2024,
+        "detection_method": "Indicator (Stage 1)",
+        "positive_tests": 49831
+      },
+      {
+        "year": 2024,
+        "detection_method": "Laboratory or Toxicology (Stage 3)",
+        "positive_tests": 32185
+      },
+      {
+        "year": 2024,
+        "detection_method": "Not applicable",
+        "positive_tests": 0
+      },
+      {
+        "year": 2024,
+        "detection_method": "Secondary Confirmatory (Stage 2)",
+        "positive_tests": 7238
+      }
+    ]
+  },
+  "notes": [
+    "The source data is annual only; no sub-annual temporal resolution is available.",
+    "Substance detection fields (cannabis, amphetamine, cocaine, ecstasy, methylamphetamine, other) are indicator-based (Yes/No/Not applicable) rather than quantitative counts.",
+    "Zero values are retained as observed values rather than treated as missing data.",
+    "Date values from Excel are converted to ISO 8601 calendar dates for easier downstream use.",
+    "Cross-jurisdiction comparisons should be read as indicative because state and territory reporting systems are not fully harmonised."
+  ]
+}
