@@ -1,0 +1,933 @@
+{
+  "dataset_key": "police-enforcement-positive-breath-tests",
+  "title": "Positive breath tests",
+  "description": "Cleaned annual police positive breath test records published by BITRE and the National Road Safety Data Hub.",
+  "source": {
+    "name": "Bureau of Infrastructure and Transport Research Economics (BITRE)",
+    "publication_url": "https://www.bitre.gov.au/publications/2024/road-safety-enforcement-data",
+    "dataset_url": "https://datahub.roadsafety.gov.au/safe-systems/safe-road-use/police-enforcement",
+    "source_file": "police_enforcement_2024_positive_breath_tests.xlsx"
+  },
+  "schema_version": 1,
+  "generated_at": "2026-04-05T14:54:29Z",
+  "record_count": 1326,
+  "latest_year": 2024,
+  "period_coverage": {
+    "start": "2008-01-01",
+    "end": "2024-12-31",
+    "count": 17
+  },
+  "totals": {
+    "total_positive_tests": 1357825,
+    "total_fines": 14753,
+    "total_arrests": 2148,
+    "total_charges": 43425,
+    "total_actions": 1418151
+  },
+  "latest_year_totals": {
+    "total_positive_tests": 57801,
+    "total_fines": 7115,
+    "total_arrests": 1225,
+    "total_charges": 22563,
+    "total_actions": 88704
+  },
+  "dimensions": {
+    "jurisdictions": [
+      "ACT",
+      "NSW",
+      "NT",
+      "QLD",
+      "SA",
+      "TAS",
+      "VIC",
+      "WA"
+    ],
+    "locations": [
+      "All regions",
+      "Inner Regional Australia",
+      "Major Cities of Australia",
+      "Outer Regional Australia",
+      "Remote Australia",
+      "Unknown",
+      "Very Remote Australia"
+    ],
+    "age_groups": [
+      "0-16",
+      "17-25",
+      "26-39",
+      "40-64",
+      "65 and over",
+      "All ages",
+      "Unknown"
+    ]
+  },
+  "quality": {
+    "rows_seen": 1326,
+    "rows_emitted": 1326,
+    "rows_skipped": 0,
+    "missing_required_values": {},
+    "unknown_metric_keys": []
+  },
+  "aggregates": {
+    "timeseries": [
+      {
+        "year": 2008,
+        "positive_tests": 114442,
+        "fines": 0,
+        "arrests": 0,
+        "charges": 0,
+        "total_actions": 114442
+      },
+      {
+        "year": 2009,
+        "positive_tests": 119268,
+        "fines": 0,
+        "arrests": 0,
+        "charges": 0,
+        "total_actions": 119268
+      },
+      {
+        "year": 2010,
+        "positive_tests": 112297,
+        "fines": 0,
+        "arrests": 0,
+        "charges": 0,
+        "total_actions": 112297
+      },
+      {
+        "year": 2011,
+        "positive_tests": 97913,
+        "fines": 0,
+        "arrests": 0,
+        "charges": 0,
+        "total_actions": 97913
+      },
+      {
+        "year": 2012,
+        "positive_tests": 91005,
+        "fines": 0,
+        "arrests": 0,
+        "charges": 0,
+        "total_actions": 91005
+      },
+      {
+        "year": 2013,
+        "positive_tests": 91028,
+        "fines": 0,
+        "arrests": 0,
+        "charges": 0,
+        "total_actions": 91028
+      },
+      {
+        "year": 2014,
+        "positive_tests": 91218,
+        "fines": 0,
+        "arrests": 0,
+        "charges": 0,
+        "total_actions": 91218
+      },
+      {
+        "year": 2015,
+        "positive_tests": 84354,
+        "fines": 0,
+        "arrests": 0,
+        "charges": 0,
+        "total_actions": 84354
+      },
+      {
+        "year": 2016,
+        "positive_tests": 71417,
+        "fines": 0,
+        "arrests": 0,
+        "charges": 0,
+        "total_actions": 71417
+      },
+      {
+        "year": 2017,
+        "positive_tests": 70522,
+        "fines": 0,
+        "arrests": 0,
+        "charges": 0,
+        "total_actions": 70522
+      },
+      {
+        "year": 2018,
+        "positive_tests": 64843,
+        "fines": 0,
+        "arrests": 0,
+        "charges": 0,
+        "total_actions": 64843
+      },
+      {
+        "year": 2019,
+        "positive_tests": 65380,
+        "fines": 0,
+        "arrests": 0,
+        "charges": 0,
+        "total_actions": 65380
+      },
+      {
+        "year": 2020,
+        "positive_tests": 54736,
+        "fines": 0,
+        "arrests": 0,
+        "charges": 0,
+        "total_actions": 54736
+      },
+      {
+        "year": 2021,
+        "positive_tests": 53483,
+        "fines": 0,
+        "arrests": 0,
+        "charges": 0,
+        "total_actions": 53483
+      },
+      {
+        "year": 2022,
+        "positive_tests": 58935,
+        "fines": 0,
+        "arrests": 0,
+        "charges": 0,
+        "total_actions": 58935
+      },
+      {
+        "year": 2023,
+        "positive_tests": 59183,
+        "fines": 7638,
+        "arrests": 923,
+        "charges": 20862,
+        "total_actions": 88606
+      },
+      {
+        "year": 2024,
+        "positive_tests": 57801,
+        "fines": 7115,
+        "arrests": 1225,
+        "charges": 22563,
+        "total_actions": 88704
+      }
+    ],
+    "by_jurisdiction": [
+      {
+        "jurisdiction": "NSW",
+        "positive_tests": 12995,
+        "fines": 3631,
+        "arrests": 0,
+        "charges": 9364,
+        "total_actions": 25990
+      },
+      {
+        "jurisdiction": "WA",
+        "positive_tests": 10268,
+        "fines": 1920,
+        "arrests": 432,
+        "charges": 8348,
+        "total_actions": 20968
+      },
+      {
+        "jurisdiction": "QLD",
+        "positive_tests": 15336,
+        "fines": 0,
+        "arrests": 0,
+        "charges": 0,
+        "total_actions": 15336
+      },
+      {
+        "jurisdiction": "NT",
+        "positive_tests": 8717,
+        "fines": 231,
+        "arrests": 489,
+        "charges": 1355,
+        "total_actions": 10792
+      },
+      {
+        "jurisdiction": "SA",
+        "positive_tests": 4434,
+        "fines": 1333,
+        "arrests": 249,
+        "charges": 2852,
+        "total_actions": 8868
+      },
+      {
+        "jurisdiction": "VIC",
+        "positive_tests": 5407,
+        "fines": 0,
+        "arrests": 0,
+        "charges": 0,
+        "total_actions": 5407
+      },
+      {
+        "jurisdiction": "ACT",
+        "positive_tests": 644,
+        "fines": 0,
+        "arrests": 55,
+        "charges": 644,
+        "total_actions": 1343
+      }
+    ],
+    "by_jurisdiction_timeseries": [
+      {
+        "year": 2008,
+        "jurisdiction": "ACT",
+        "positive_tests": 1887
+      },
+      {
+        "year": 2008,
+        "jurisdiction": "NSW",
+        "positive_tests": 27368
+      },
+      {
+        "year": 2008,
+        "jurisdiction": "NT",
+        "positive_tests": 9460
+      },
+      {
+        "year": 2008,
+        "jurisdiction": "QLD",
+        "positive_tests": 26975
+      },
+      {
+        "year": 2008,
+        "jurisdiction": "SA",
+        "positive_tests": 10467
+      },
+      {
+        "year": 2008,
+        "jurisdiction": "TAS",
+        "positive_tests": 4563
+      },
+      {
+        "year": 2008,
+        "jurisdiction": "VIC",
+        "positive_tests": 19190
+      },
+      {
+        "year": 2008,
+        "jurisdiction": "WA",
+        "positive_tests": 14532
+      },
+      {
+        "year": 2009,
+        "jurisdiction": "ACT",
+        "positive_tests": 1628
+      },
+      {
+        "year": 2009,
+        "jurisdiction": "NSW",
+        "positive_tests": 26595
+      },
+      {
+        "year": 2009,
+        "jurisdiction": "NT",
+        "positive_tests": 10990
+      },
+      {
+        "year": 2009,
+        "jurisdiction": "QLD",
+        "positive_tests": 32696
+      },
+      {
+        "year": 2009,
+        "jurisdiction": "SA",
+        "positive_tests": 10954
+      },
+      {
+        "year": 2009,
+        "jurisdiction": "TAS",
+        "positive_tests": 5120
+      },
+      {
+        "year": 2009,
+        "jurisdiction": "VIC",
+        "positive_tests": 18246
+      },
+      {
+        "year": 2009,
+        "jurisdiction": "WA",
+        "positive_tests": 13039
+      },
+      {
+        "year": 2010,
+        "jurisdiction": "ACT",
+        "positive_tests": 1447
+      },
+      {
+        "year": 2010,
+        "jurisdiction": "NSW",
+        "positive_tests": 24411
+      },
+      {
+        "year": 2010,
+        "jurisdiction": "NT",
+        "positive_tests": 10842
+      },
+      {
+        "year": 2010,
+        "jurisdiction": "QLD",
+        "positive_tests": 33638
+      },
+      {
+        "year": 2010,
+        "jurisdiction": "SA",
+        "positive_tests": 10172
+      },
+      {
+        "year": 2010,
+        "jurisdiction": "TAS",
+        "positive_tests": 3895
+      },
+      {
+        "year": 2010,
+        "jurisdiction": "VIC",
+        "positive_tests": 16297
+      },
+      {
+        "year": 2010,
+        "jurisdiction": "WA",
+        "positive_tests": 11595
+      },
+      {
+        "year": 2011,
+        "jurisdiction": "ACT",
+        "positive_tests": 1488
+      },
+      {
+        "year": 2011,
+        "jurisdiction": "NSW",
+        "positive_tests": 22117
+      },
+      {
+        "year": 2011,
+        "jurisdiction": "NT",
+        "positive_tests": 8914
+      },
+      {
+        "year": 2011,
+        "jurisdiction": "QLD",
+        "positive_tests": 27264
+      },
+      {
+        "year": 2011,
+        "jurisdiction": "SA",
+        "positive_tests": 10034
+      },
+      {
+        "year": 2011,
+        "jurisdiction": "TAS",
+        "positive_tests": 3527
+      },
+      {
+        "year": 2011,
+        "jurisdiction": "VIC",
+        "positive_tests": 13925
+      },
+      {
+        "year": 2011,
+        "jurisdiction": "WA",
+        "positive_tests": 10644
+      },
+      {
+        "year": 2012,
+        "jurisdiction": "ACT",
+        "positive_tests": 1418
+      },
+      {
+        "year": 2012,
+        "jurisdiction": "NSW",
+        "positive_tests": 19982
+      },
+      {
+        "year": 2012,
+        "jurisdiction": "NT",
+        "positive_tests": 9332
+      },
+      {
+        "year": 2012,
+        "jurisdiction": "QLD",
+        "positive_tests": 25320
+      },
+      {
+        "year": 2012,
+        "jurisdiction": "SA",
+        "positive_tests": 9267
+      },
+      {
+        "year": 2012,
+        "jurisdiction": "TAS",
+        "positive_tests": 2916
+      },
+      {
+        "year": 2012,
+        "jurisdiction": "VIC",
+        "positive_tests": 13033
+      },
+      {
+        "year": 2012,
+        "jurisdiction": "WA",
+        "positive_tests": 9737
+      },
+      {
+        "year": 2013,
+        "jurisdiction": "ACT",
+        "positive_tests": 1399
+      },
+      {
+        "year": 2013,
+        "jurisdiction": "NSW",
+        "positive_tests": 20193
+      },
+      {
+        "year": 2013,
+        "jurisdiction": "NT",
+        "positive_tests": 12395
+      },
+      {
+        "year": 2013,
+        "jurisdiction": "QLD",
+        "positive_tests": 25291
+      },
+      {
+        "year": 2013,
+        "jurisdiction": "SA",
+        "positive_tests": 8890
+      },
+      {
+        "year": 2013,
+        "jurisdiction": "TAS",
+        "positive_tests": 2782
+      },
+      {
+        "year": 2013,
+        "jurisdiction": "VIC",
+        "positive_tests": 11442
+      },
+      {
+        "year": 2013,
+        "jurisdiction": "WA",
+        "positive_tests": 8636
+      },
+      {
+        "year": 2014,
+        "jurisdiction": "ACT",
+        "positive_tests": 1267
+      },
+      {
+        "year": 2014,
+        "jurisdiction": "NSW",
+        "positive_tests": 19531
+      },
+      {
+        "year": 2014,
+        "jurisdiction": "NT",
+        "positive_tests": 13562
+      },
+      {
+        "year": 2014,
+        "jurisdiction": "QLD",
+        "positive_tests": 23023
+      },
+      {
+        "year": 2014,
+        "jurisdiction": "SA",
+        "positive_tests": 8154
+      },
+      {
+        "year": 2014,
+        "jurisdiction": "TAS",
+        "positive_tests": 2585
+      },
+      {
+        "year": 2014,
+        "jurisdiction": "VIC",
+        "positive_tests": 12062
+      },
+      {
+        "year": 2014,
+        "jurisdiction": "WA",
+        "positive_tests": 11034
+      },
+      {
+        "year": 2015,
+        "jurisdiction": "ACT",
+        "positive_tests": 1134
+      },
+      {
+        "year": 2015,
+        "jurisdiction": "NSW",
+        "positive_tests": 18750
+      },
+      {
+        "year": 2015,
+        "jurisdiction": "NT",
+        "positive_tests": 14192
+      },
+      {
+        "year": 2015,
+        "jurisdiction": "QLD",
+        "positive_tests": 20357
+      },
+      {
+        "year": 2015,
+        "jurisdiction": "SA",
+        "positive_tests": 8208
+      },
+      {
+        "year": 2015,
+        "jurisdiction": "TAS",
+        "positive_tests": 2327
+      },
+      {
+        "year": 2015,
+        "jurisdiction": "VIC",
+        "positive_tests": 9315
+      },
+      {
+        "year": 2015,
+        "jurisdiction": "WA",
+        "positive_tests": 10071
+      },
+      {
+        "year": 2016,
+        "jurisdiction": "ACT",
+        "positive_tests": 1005
+      },
+      {
+        "year": 2016,
+        "jurisdiction": "NSW",
+        "positive_tests": 17442
+      },
+      {
+        "year": 2016,
+        "jurisdiction": "NT",
+        "positive_tests": 7571
+      },
+      {
+        "year": 2016,
+        "jurisdiction": "QLD",
+        "positive_tests": 18673
+      },
+      {
+        "year": 2016,
+        "jurisdiction": "SA",
+        "positive_tests": 5155
+      },
+      {
+        "year": 2016,
+        "jurisdiction": "TAS",
+        "positive_tests": 2322
+      },
+      {
+        "year": 2016,
+        "jurisdiction": "VIC",
+        "positive_tests": 10337
+      },
+      {
+        "year": 2016,
+        "jurisdiction": "WA",
+        "positive_tests": 8912
+      },
+      {
+        "year": 2017,
+        "jurisdiction": "ACT",
+        "positive_tests": 1057
+      },
+      {
+        "year": 2017,
+        "jurisdiction": "NSW",
+        "positive_tests": 18022
+      },
+      {
+        "year": 2017,
+        "jurisdiction": "NT",
+        "positive_tests": 7846
+      },
+      {
+        "year": 2017,
+        "jurisdiction": "QLD",
+        "positive_tests": 16489
+      },
+      {
+        "year": 2017,
+        "jurisdiction": "SA",
+        "positive_tests": 6007
+      },
+      {
+        "year": 2017,
+        "jurisdiction": "TAS",
+        "positive_tests": 2070
+      },
+      {
+        "year": 2017,
+        "jurisdiction": "VIC",
+        "positive_tests": 9969
+      },
+      {
+        "year": 2017,
+        "jurisdiction": "WA",
+        "positive_tests": 9062
+      },
+      {
+        "year": 2018,
+        "jurisdiction": "ACT",
+        "positive_tests": 1114
+      },
+      {
+        "year": 2018,
+        "jurisdiction": "NSW",
+        "positive_tests": 17989
+      },
+      {
+        "year": 2018,
+        "jurisdiction": "NT",
+        "positive_tests": 7672
+      },
+      {
+        "year": 2018,
+        "jurisdiction": "QLD",
+        "positive_tests": 16773
+      },
+      {
+        "year": 2018,
+        "jurisdiction": "SA",
+        "positive_tests": 4997
+      },
+      {
+        "year": 2018,
+        "jurisdiction": "TAS",
+        "positive_tests": 1723
+      },
+      {
+        "year": 2018,
+        "jurisdiction": "VIC",
+        "positive_tests": 7025
+      },
+      {
+        "year": 2018,
+        "jurisdiction": "WA",
+        "positive_tests": 7550
+      },
+      {
+        "year": 2019,
+        "jurisdiction": "ACT",
+        "positive_tests": 933
+      },
+      {
+        "year": 2019,
+        "jurisdiction": "NSW",
+        "positive_tests": 17084
+      },
+      {
+        "year": 2019,
+        "jurisdiction": "NT",
+        "positive_tests": 7775
+      },
+      {
+        "year": 2019,
+        "jurisdiction": "QLD",
+        "positive_tests": 16685
+      },
+      {
+        "year": 2019,
+        "jurisdiction": "SA",
+        "positive_tests": 4985
+      },
+      {
+        "year": 2019,
+        "jurisdiction": "TAS",
+        "positive_tests": 1805
+      },
+      {
+        "year": 2019,
+        "jurisdiction": "VIC",
+        "positive_tests": 9235
+      },
+      {
+        "year": 2019,
+        "jurisdiction": "WA",
+        "positive_tests": 6878
+      },
+      {
+        "year": 2020,
+        "jurisdiction": "ACT",
+        "positive_tests": 888
+      },
+      {
+        "year": 2020,
+        "jurisdiction": "NSW",
+        "positive_tests": 13540
+      },
+      {
+        "year": 2020,
+        "jurisdiction": "NT",
+        "positive_tests": 7362
+      },
+      {
+        "year": 2020,
+        "jurisdiction": "QLD",
+        "positive_tests": 16060
+      },
+      {
+        "year": 2020,
+        "jurisdiction": "SA",
+        "positive_tests": 4400
+      },
+      {
+        "year": 2020,
+        "jurisdiction": "VIC",
+        "positive_tests": 4976
+      },
+      {
+        "year": 2020,
+        "jurisdiction": "WA",
+        "positive_tests": 7510
+      },
+      {
+        "year": 2021,
+        "jurisdiction": "ACT",
+        "positive_tests": 767
+      },
+      {
+        "year": 2021,
+        "jurisdiction": "NSW",
+        "positive_tests": 12980
+      },
+      {
+        "year": 2021,
+        "jurisdiction": "NT",
+        "positive_tests": 5492
+      },
+      {
+        "year": 2021,
+        "jurisdiction": "QLD",
+        "positive_tests": 16402
+      },
+      {
+        "year": 2021,
+        "jurisdiction": "SA",
+        "positive_tests": 4062
+      },
+      {
+        "year": 2021,
+        "jurisdiction": "VIC",
+        "positive_tests": 6363
+      },
+      {
+        "year": 2021,
+        "jurisdiction": "WA",
+        "positive_tests": 7417
+      },
+      {
+        "year": 2022,
+        "jurisdiction": "ACT",
+        "positive_tests": 847
+      },
+      {
+        "year": 2022,
+        "jurisdiction": "NSW",
+        "positive_tests": 15794
+      },
+      {
+        "year": 2022,
+        "jurisdiction": "NT",
+        "positive_tests": 5120
+      },
+      {
+        "year": 2022,
+        "jurisdiction": "QLD",
+        "positive_tests": 17007
+      },
+      {
+        "year": 2022,
+        "jurisdiction": "SA",
+        "positive_tests": 4556
+      },
+      {
+        "year": 2022,
+        "jurisdiction": "VIC",
+        "positive_tests": 8280
+      },
+      {
+        "year": 2022,
+        "jurisdiction": "WA",
+        "positive_tests": 7331
+      },
+      {
+        "year": 2023,
+        "jurisdiction": "ACT",
+        "positive_tests": 742
+      },
+      {
+        "year": 2023,
+        "jurisdiction": "NSW",
+        "positive_tests": 13971
+      },
+      {
+        "year": 2023,
+        "jurisdiction": "NT",
+        "positive_tests": 7722
+      },
+      {
+        "year": 2023,
+        "jurisdiction": "QLD",
+        "positive_tests": 15859
+      },
+      {
+        "year": 2023,
+        "jurisdiction": "SA",
+        "positive_tests": 4333
+      },
+      {
+        "year": 2023,
+        "jurisdiction": "VIC",
+        "positive_tests": 8257
+      },
+      {
+        "year": 2023,
+        "jurisdiction": "WA",
+        "positive_tests": 8299
+      },
+      {
+        "year": 2024,
+        "jurisdiction": "ACT",
+        "positive_tests": 644
+      },
+      {
+        "year": 2024,
+        "jurisdiction": "NSW",
+        "positive_tests": 12995
+      },
+      {
+        "year": 2024,
+        "jurisdiction": "NT",
+        "positive_tests": 8717
+      },
+      {
+        "year": 2024,
+        "jurisdiction": "QLD",
+        "positive_tests": 15336
+      },
+      {
+        "year": 2024,
+        "jurisdiction": "SA",
+        "positive_tests": 4434
+      },
+      {
+        "year": 2024,
+        "jurisdiction": "VIC",
+        "positive_tests": 5407
+      },
+      {
+        "year": 2024,
+        "jurisdiction": "WA",
+        "positive_tests": 10268
+      }
+    ]
+  },
+  "notes": [
+    "Data is reported at annual granularity only; no monthly or quarterly breakdown is available.",
+    "The COUNT field represents positive breath test outcomes. Fines, arrests, and charges are recorded separately but are typically zero for this metric.",
+    "Cross-jurisdiction comparisons should be read as indicative because state and territory reporting systems are not fully harmonised.",
+    "Zero values are retained as observed values rather than treated as missing data.",
+    "Date serials from Excel are converted to ISO 8601 calendar dates for easier downstream use."
+  ]
+}
