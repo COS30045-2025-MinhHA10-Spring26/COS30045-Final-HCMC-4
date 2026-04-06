@@ -29,25 +29,32 @@ test.describe('Homepage', () => {
 
   test('navigation links work', async ({ page }) => {
     await page.goto(BASE, { waitUntil: 'domcontentloaded' });
-    await page.waitForTimeout(1000);
 
-    await page.locator('.nav-links .nav-link').nth(0).click();
+    const navLinks = page.locator('.nav-links .nav-link');
+    await expect(navLinks).toHaveCount(4);
+    await expect(navLinks.first()).toBeVisible();
+
+    await navLinks.nth(0).click();
     await expect(page).toHaveURL(/#\/fines/);
 
-    await page.locator('.nav-links .nav-link').nth(1).click();
+    await navLinks.nth(1).click();
     await expect(page).toHaveURL(/#\/breath-tests/);
 
-    await page.locator('.nav-links .nav-link').nth(2).click();
+    await navLinks.nth(2).click();
     await expect(page).toHaveURL(/#\/drug-tests/);
 
-    await page.locator('.nav-links .nav-link').nth(3).click();
+    await navLinks.nth(3).click();
     await expect(page).toHaveURL(/#\/about/);
   });
 
   test('dataset cards are clickable', async ({ page }) => {
     await page.goto(BASE, { waitUntil: 'domcontentloaded' });
-    await page.waitForTimeout(500);
-    await page.locator('.dataset-card').first().click();
+
+    const cards = page.locator('.dataset-card');
+    await expect(cards).toHaveCount(4);
+    await expect(cards.first()).toBeVisible();
+
+    await cards.first().click();
     await expect(page).toHaveURL(/#\/fines/);
   });
 });
